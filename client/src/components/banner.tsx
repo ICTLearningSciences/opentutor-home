@@ -15,10 +15,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ADMIN_ENDPOINT } from "api";
-import tutorImg from "images/tutor-chat.png";
-import editImg from "images/admin-edit-lesson.png";
-import gradeImg from "images/admin-grading.png";
-import trainImg from "images/admin-training.png";
+import chatImg from "images/banners/chat.png";
+import editImg from "images/banners/edit.png";
+import gradeImg from "images/banners/grade.png";
+import trainImg from "images/banners/train.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -79,7 +79,7 @@ const banners: BannerData[] = [
   {
     title: "Interactive tutoring lessons for students",
     subtitle: "What is OpenTutor?",
-    image: tutorImg,
+    image: chatImg,
   },
   {
     title: "Easy to author and edit lessons",
