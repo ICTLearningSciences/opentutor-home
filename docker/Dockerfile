@@ -1,7 +1,5 @@
 FROM node:12.18.3 as builder
 ARG NODE_ENV
-ARG OPENTUTOR_CLIENT_VERSION
-ENV OPENTUTOR_CLIENT_VERSION=${OPENTUTOR_CLIENT_VERSION}
 ENV CYPRESS_INSTALL_BINARY=0
 RUN apt-get update && \
     apt-get install -y \
@@ -25,7 +23,7 @@ RUN chmod +x /tini
 WORKDIR /app
 COPY docker .
 RUN rm -rf build
-COPY --from=builder /build/client/public /app/public/
-RUN npm ci  --production 
+COPY --from=builder /build/client/public /app/public
+RUN npm ci --production
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/tini", "--", "/app/entrypoint.sh"]
