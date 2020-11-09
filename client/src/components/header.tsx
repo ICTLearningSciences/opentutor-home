@@ -58,6 +58,7 @@ const Header = (): JSX.Element => {
     const loginResponse = response as GoogleLoginResponse;
     setCookie("accessToken", loginResponse.accessToken, { path: "/" });
     setUsername(loginResponse.profileObj.name);
+    window.location.href = ADMIN_ENDPOINT;
   };
 
   const onLoginFailed = (response: {
