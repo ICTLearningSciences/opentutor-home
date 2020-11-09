@@ -20,6 +20,7 @@ import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, GOOGLE_CLIENT_ID } from "api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    width: "100%",
     flexGrow: 1,
   },
   logoButton: {

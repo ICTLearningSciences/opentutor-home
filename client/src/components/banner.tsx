@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     height: 300,
+    flexGrow: 1,
   },
   card: {
     display: "flex",

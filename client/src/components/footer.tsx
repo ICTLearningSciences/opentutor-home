@@ -12,8 +12,9 @@ import { ADMIN_ENDPOINT, TUTOR_ENDPOINT } from "api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    width: "100%",
     alignItems: "center",
+    flexGrow: 1,
   },
   link: {
     marginRight: 10,
