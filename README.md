@@ -1,85 +1,111 @@
-  <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
-  <p align="center">
-    <a href="https://oneshopper.netlify.com/">
-      <img alt="OneShopper" src="https://github.com/Rohitguptab/OneShopper/blob/master/src/images/oneshopper-logo.png" width="200" />
-    </a>
-  </p>
-  <h1 align="center">
-    OneShopper
-  </h1>
-  <img src="https://github.com/rohitguptab/OneShopper/blob/master/docs/screenshot.jpg" />
-  
-
-  Kick off your Ecommerce Website with OneShopper project you can build you site with this, We have used [Gatsby](https://www.gatsbyjs.org/) + [Contenful](https://www.gatsbyjs.org/packages/gatsby-source-contentful/?=Contenful) and [snipcart](https://www.gatsbyjs.org/packages/gatsby-plugin-snipcart/?=snipcart).
-  
-  Live Demo:
-  https://oneshopper.netlify.com
+# opentutor-home
+web ui for opentutor home page
 
 
-  ## 🚀 Quick start
-
-  1.  **Setup this site.**
-
-      Use the Gatsby CLI to Clone this site.
-
-      ```sh
-      # Clone this Repositories
-      gatsby new OneShopper https://github.com/Rohitguptab/OneShopper.git
-      ```
-
-  1.  **Setup Contentful Models**
-
-      Use [contentful-cli](https://github.com/contentful/contentful-cli) to import the models from oneshopper.json
-
-      ```
-      contentful space --space-id <CONTENTFUL_SPACE_ID> import --content-file oneshopper.json
-      ```
-      
-      Checkout my below blog how to Import and Export data from ContentFul
-      
-      [https://rohitgupta.netlify.app/import-and-export-data-with-contentful-cli](https://rohitgupta.netlify.app/import-and-export-data-with-contentful-cli)
-
-  1.  **Setup your Own Configure Projects.**
-
-      Enter your own key
-
-      [ContentFul](https://be.contentful.com/login):
-      - spaceId = **Key**
-      - accessToken = **Key**
-
-      [snipcart](https://app.snipcart.com/):
-      - snipcart = **Key**
-
-  1.  **Start developing.**
-
-      Navigate into your new site’s directory and start it up.
-
-      ```sh
-      cd OneShopper
-      npm install
-      gatsby develop
-      ```
+## Usage
 
 
-  1.  **Open the source code and start editing!**
-
-      Your site is now running at `http://localhost:8000`!
-
-      _Note: You'll also see a second link: _`http://localhost:8000/___graphql`_. This is a tool you can use to experiment with querying your data. Learn more about using this tool in the [Gatsby tutorial](https://www.gatsbyjs.org/tutorial/part-five/#introducing-graphiql)._
-
-      Open the `OneShopper` directory in your code editor of choice and edit `src/pages/index.js`. Save your changes and the browser will update in real time!
+A docker image that serves the opentutor home page web client.
 
 
-  ## 🎓 Learning Gatsby
+## Variables
 
-  Looking for more guidance? Full documentation for Gatsby lives [on the website](https://www.gatsbyjs.org/). Here are some places to start:
+In order to function properly the client generally requires these environment variables defined:
 
-  - **For most developers, we recommend starting with our [in-depth tutorial for creating a site with Gatsby](https://www.gatsbyjs.org/tutorial/).** It starts with zero assumptions about your level of ability and walks through every step of the process.
+- **GRAPHQL_ENDPOINT**: The graphql endpoint for accessing grader data. Defaults to /graphql
 
-  - **To dive straight into code samples, head [to our documentation](https://www.gatsbyjs.org/docs/).** In particular, check out the _Guides_, _API Reference_, and _Advanced Tutorials_ sections in the sidebar.
+- **GOOGLE_CLIENT_ID**: The google client id for google api, used for login
 
-  ## 💫 Deploy
+## Development
 
-  [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/Rohitguptab/OneShopper)
+### Required Software
 
-  <!-- AUTO-GENERATED-CONTENT:END -->
+- unix system (osx or linux)
+- node/npm 12.X
+- docker
+
+Any changes made to this repo should be covered by tests. To run the existing tests:
+
+```
+make test
+```
+
+All pushed commits must also pass format and lint checks. To check all required tests before a commit:
+
+```
+make test-all
+```
+
+To fix formatting issues:
+
+```
+make format
+```
+
+### Cypress Testing
+
+To run cypress tests locally you need two shells, first make sure the client is running locally:
+
+```
+cd client && make develop
+```
+
+...then you can run the full cypress test suite with
+
+```
+cd client && make test-cypress
+```
+
+```
+cd client && npm run cy:open
+```
+
+...then in the cypress browser window, click a spec to run it.
+
+### Cypress Visual-Regression Testing
+
+We use [cypress-image-snapshot](https://www.npmjs.com/package/cypress-image-snapshot) for visual-regression testing. 
+
+Generally, you don't want to run the image-snapshot tests while developing because they will fail based on small differences in rendering from environment to environment. For this reason, the default npm commands for `cy:open` and `cy:run` disable image-snapshot testing.
+
+What you *must* do, is update image snapshots before push any changes that change the presentation of the app (at least for screens under visual-regression test).
+
+To update snapshots do:
+
+```
+cd client && make cypress-update-snapshots
+```
+
+This command updates snapshots, running cypress in the same docker image used for testing in Circleci. It may take a while the first time you run it, because the process needs to install and cache dependencies in a distinct folder (because they will install/compile for the linux flavor in the docker image).
+
+If anything is failing with `make cypress-update-snapshots`, try
+
+```
+make clean-cypress-snapshot-cache
+```
+
+## Releases
+
+Currently, this image is semantically versioned. When making changes that you want to test in another project, create a branch and PR and then you can release a test tag one of two ways:
+
+To build/push a work-in-progress tag of `opentutor-home` for the current commit in your branch
+
+- find the `docker_tag_commit` workflow for your commit in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-home)
+- approve the workflow
+- this will create a tag like `https://hub.docker.com/opentutor-home:${COMMIT_SHA}`
+
+To build/push a pre-release semver tag of `opentutor-home` for the current commit in your branch
+
+- create a [github release](https://github.com/ICTLearningSciences/opentutor-home/releases/new) **from your development branch** with tag format `/^\d+\.\d+\.\d+(-[a-z\d\-.]+)?$/` (e.g. `1.0.0-alpha.1`)
+- find the `docker_tag_release` workflow for your git tag in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-home)
+- approve the workflow
+- this will create a tag like `uscictdocker/opentutor-home:1.0.0-alpha.1`
+
+
+
+Once your changes are approved and merged to main, you should create a release tag in semver format as follows:
+
+- create a [github release](https://github.com/ICTLearningSciences/opentutor-home/releases/new) **from main** with tag format `/^\d+\.\d+\.\d$/` (e.g. `1.0.0`)
+- find the `docker_tag_release` workflow for your git tag in [circleci](https://circleci.com/gh/ICTLearningSciences/workflows/opentutor-home)
+- approve the workflow
+- this will create a tag like `uscictdocker/opentutor-home:1.0.0`
