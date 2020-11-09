@@ -2,8 +2,6 @@ import React from "react";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { CookiesProvider } from "react-cookie";
 
-import Header from "components/header";
-import Footer from "components/footer";
 import "css/style.css";
 
 const theme = createMuiTheme({
@@ -16,10 +14,6 @@ const theme = createMuiTheme({
 
 export const wrapRootElement = ({ element }) => (
   <MuiThemeProvider theme={theme}>
-    <CookiesProvider>
-      <Header />
-      {element}
-      <Footer />
-    </CookiesProvider>
+    <CookiesProvider>{element}</CookiesProvider>
   </MuiThemeProvider>
 );
