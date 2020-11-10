@@ -16,7 +16,8 @@ import {
 import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, GOOGLE_CLIENT_ID } from "api";
+import { ADMIN_ENDPOINT, TUTOR_ENDPOINT } from "api";
+import { getClientID } from "config";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,8 +47,15 @@ const useStyles = makeStyles((theme) => ({
 
 const Header = (): JSX.Element => {
   const classes = useStyles();
+  const [googleClientId, setClientId] = React.useState<string>("");
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [username, setUsername] = React.useState<string>();
+
+  React.useEffect(() => {
+    getClientID().then((id: string) => {
+      setClientId(id);
+    });
+  }, []);
 
   const onLoginSuccess = (
     response: GoogleLoginResponse | GoogleLoginResponseOffline
@@ -76,42 +84,50 @@ const Header = (): JSX.Element => {
   };
 
   const LoginButton = (): JSX.Element => {
+    if (!googleClientId) {
+      return <div></div>;
+    }
+
     return cookies.accessToken ? (
-      <GoogleLogout
-        clientId={GOOGLE_CLIENT_ID}
-        onLogoutSuccess={onLogout}
-        render={(renderProps) => (
-          <Button
-            startIcon={
-              <AccountCircle
-                className={[classes.loginButton, classes.link].join(" ")}
-              />
-            }
-            style={{ color: "white" }}
-            onClick={renderProps.onClick}
-            disabled={renderProps.disabled}
-          >
-            {username}
-          </Button>
-        )}
-      />
+      <div id="logout">
+        <GoogleLogout
+          clientId={googleClientId}
+          onLogoutSuccess={onLogout}
+          render={(renderProps) => (
+            <Button
+              startIcon={
+                <AccountCircle
+                  className={[classes.loginButton, classes.link].join(" ")}
+                />
+              }
+              style={{ color: "white" }}
+              onClick={renderProps.onClick}
+              disabled={renderProps.disabled}
+            >
+              {username}
+            </Button>
+          )}
+        />
+      </div>
     ) : (
-      <GoogleLogin
-        clientId={GOOGLE_CLIENT_ID}
-        isSignedIn={cookies.accessToken}
-        onSuccess={onLoginSuccess}
-        onFailure={onLoginFailed}
-        cookiePolicy={"single_host_origin"}
-        render={(renderProps) => (
-          <Button
-            style={{ color: "white" }}
-            onClick={renderProps.onClick}
-            disabled={renderProps.disabled}
-          >
-            Login
-          </Button>
-        )}
-      />
+      <div id="login">
+        <GoogleLogin
+          clientId={googleClientId}
+          isSignedIn={cookies.accessToken}
+          onSuccess={onLoginSuccess}
+          onFailure={onLoginFailed}
+          cookiePolicy={"single_host_origin"}
+          render={(renderProps) => (
+            <Button
+              style={{ color: "white" }}
+              onClick={renderProps.onClick}
+              disabled={renderProps.disabled}
+            >
+              Login
+            </Button>
+          )}
+        />
+      </div>
     );
   };
 

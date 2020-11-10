@@ -5,13 +5,11 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios from "axios";
-import config from "config";
 import { Lesson, FetchLessons, Connection } from "types";
 
 export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
 export const TUTOR_ENDPOINT = process.env.TUTOR_ENDPOINT || "/tutor";
 export const ADMIN_ENDPOINT = process.env.ADMIN_ENDPOINT || "/admin";
-export const GOOGLE_CLIENT_ID = `${config.GOOGLE_CLIENT_ID}`;
 
 interface GQLResponse<T> {
   errors?: { message: string }[];
