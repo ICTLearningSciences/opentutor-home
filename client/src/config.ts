@@ -7,6 +7,9 @@ The full terms of this copyright and license should always be found in the root 
 import axios from "axios";
 
 export async function getClientID(): Promise<string> {
+  if (process.env.GOOGLE_CLIENT_ID) {
+    return process.env.GOOGLE_CLIENT_ID;
+  }
   const config = await axios.get("/config");
   return config.data["GOOGLE_CLIENT_ID"];
 }

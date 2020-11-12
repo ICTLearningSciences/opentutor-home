@@ -74,3 +74,17 @@ export interface Hint {
 export interface FetchLessons {
   lessons: Connection<Lesson>;
 }
+
+export interface FetchProfile {
+  data: Profile;
+}
+
+export interface Profile {
+  id: string;
+  name: string;
+  given_name: string;
+  family_name: string;
+  picture: string;
+  gender: string;
+  email: string;
+}

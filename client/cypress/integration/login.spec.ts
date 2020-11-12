@@ -51,6 +51,45 @@ describe("Login", () => {
   it("shows logout if logged in", () => {
     cy.setCookie("accessToken", "accessToken");
     cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.route({
+      method: "GET",
+      url:
+        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
+      status: 200,
+      response: {
+        data: {
+          given_name: "Kayla",
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
     cy.get("#logout").should("not.be.disabled");
+    cy.get("#logout").contains("Kayla");
+  });
+
+  it("logs out", () => {
+    cy.setCookie("accessToken", "accessToken");
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.route({
+      method: "GET",
+      url:
+        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=accessToken",
+      status: 200,
+      response: {
+        data: {
+          given_name: "Kayla",
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    cy.get("#logout").click();
+    cy.get("#login").should("not.be.disabled");
   });
 });
