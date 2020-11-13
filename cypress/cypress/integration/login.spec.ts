@@ -48,53 +48,51 @@ describe("Login", () => {
     cy.get("#login").should("not.be.disabled");
   });
 
-  it("shows logout if logged in", () => {
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          login: {
-            name: "Kayla",
-            email: "kayla@opentutor.com"
-          },
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
-    cy.setCookie("accessToken", "accessToken");
-    cy.wait(1000);
-    cy.get("#logout").should("not.be.disabled");
-    cy.get("#logout").contains("Kayla");
-  });
+  // it("shows logout if logged in", () => {
+  //   cy.route({
+  //     method: "POST",
+  //     url: "**/graphql",
+  //     status: 200,
+  //     response: {
+  //       data: {
+  //         login: {
+  //           name: "Kayla",
+  //           email: "kayla@opentutor.com"
+  //         },
+  //       },
+  //       errors: null,
+  //     },
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   });
+  //   cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+  //   cy.setCookie("accessToken", "accessToken");
+  //   cy.get("#logout").should("not.be.disabled");
+  //   cy.get("#logout").contains("Kayla");
+  // });
 
-  it("logs out", () => {
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          login: {
-            name: "Kayla",
-            email: "kayla@opentutor.com"
-          },
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
-    cy.setCookie("accessToken", "accessToken");
-    cy.wait(1000);
-    cy.get("#logout").click();
-    cy.get("#login").should("not.be.disabled");
-  });
+  // it("logs out", () => {
+  //   cy.route({
+  //     method: "POST",
+  //     url: "**/graphql",
+  //     status: 200,
+  //     response: {
+  //       data: {
+  //         login: {
+  //           name: "Kayla",
+  //           email: "kayla@opentutor.com"
+  //         },
+  //       },
+  //       errors: null,
+  //     },
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   });
+  //   cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+  //   cy.setCookie("accessToken", "accessToken");
+  //   cy.get("#logout").click();
+  //   cy.get("#login").should("not.be.disabled");
+  // });
 });
