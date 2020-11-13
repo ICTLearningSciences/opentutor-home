@@ -15,9 +15,9 @@ import {
 import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, fetchGoogleProfile } from "api";
+import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, login } from "api";
 import { getClientID } from "config";
-import { Profile } from "types";
+import { User } from "types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,8 +59,8 @@ const Header = (): JSX.Element => {
 
   React.useEffect(() => {
     if (cookies.accessToken) {
-      fetchGoogleProfile(cookies.accessToken).then((profile: Profile) => {
-        setUsername(profile.given_name);
+      login(cookies.accessToken).then((user: User) => {
+        setUsername(user.name);
       });
     }
   }, [cookies]);

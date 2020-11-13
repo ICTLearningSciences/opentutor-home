@@ -3,7 +3,7 @@ OPENTUTOR_CLIENT_VERSION?=latest
 TEST_E2E_DOCKER_COMPOSE=docker-compose
 TEST_E2E_IMAGE_SNAPSHOTS_PATH?=cypress/snapshots
 TEST_E2E_DOCKER_IMAGE_SNAPSHOTS_PATH?=/app/$(TEST_E2E_IMAGE_SNAPSHOTS_PATH)
-TEST_E2E_HOST_IMAGE_SNAPSHOTS_PATH?=$(PWD)/client/$(TEST_E2E_IMAGE_SNAPSHOTS_PATH)
+TEST_E2E_HOST_IMAGE_SNAPSHOTS_PATH?=$(PWD)/cypress/$(TEST_E2E_IMAGE_SNAPSHOTS_PATH)
 
 PHONY: clean
 clean:
@@ -83,15 +83,15 @@ test-e2e-build:
 
 .PHONY: test-e2e-exec
 test-e2e-exec:
-	$(TEST_E2E_DOCKER_COMPOSE) exec -T cypress npx cypress run --env updateSnapshots=true
+	$(TEST_E2E_DOCKER_COMPOSE) exec -T cypress npx cypress run --env "CYPRESS_SNAPSHOT_DIFF_DIR=$(TEST_E2E_IMAGE_SNAPSHOTS_PATH)/__diff_output__"
 
 .PHONY: test-e2e-image-snapshots-clean
 test-e2e-image-snapshots-clean:
-	rm -rf ${TEST_E2E_HOST_IMAGE_SNAPSHOTS_PATH}
+	rm -rf $(TEST_E2E_HOST_IMAGE_SNAPSHOTS_PATH)
 
 .PHONY: test-e2e-image-snapshots-copy
 test-e2e-image-snapshots-copy:
-	docker cp $(shell $(TEST_E2E_DOCKER_COMPOSE) ps -a -q cypress):$(TEST_E2E_DOCKER_IMAGE_SNAPSHOTS_PATH)/ $(TEST_E2E_HOST_IMAGE_SNAPSHOTS_PATH)
+	docker cp $(shell $(TEST_E2E_DOCKER_COMPOSE) ps -a -q cypress):$(TEST_E2E_DOCKER_IMAGE_SNAPSHOTS_PATH) $(TEST_E2E_HOST_IMAGE_SNAPSHOTS_PATH)
 
 PHONY: test-e2e-exec-image-snapshots-update
 test-e2e-exec-image-snapshots-update:

@@ -75,16 +75,12 @@ export interface FetchLessons {
   lessons: Connection<Lesson>;
 }
 
-export interface FetchProfile {
-  data: Profile;
+export interface Login {
+  login: User;
 }
 
-export interface Profile {
+export interface User {
   id: string;
   name: string;
-  given_name: string;
-  family_name: string;
-  picture: string;
-  gender: string;
   email: string;
 }

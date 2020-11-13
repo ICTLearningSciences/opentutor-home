@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-describe("Latest Lessons", () => {
+describe("Login", () => {
   beforeEach(() => {
     cy.server();
     cy.route({
@@ -19,16 +19,12 @@ describe("Latest Lessons", () => {
                 node: {
                   lessonId: "lesson1",
                   name: "lesson 1",
-                  image:
-                    "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg",
                 },
               },
               {
                 node: {
                   lessonId: "lesson2",
                   name: "lesson 2",
-                  image:
-                    "https://i.insider.com/5df126b679d7570ad2044f3e?width=1100&format=jpeg&auto=webp",
                 },
               },
             ],
@@ -43,25 +39,62 @@ describe("Latest Lessons", () => {
     cy.visit("/");
   });
 
-  it("displays list of lessons", () => {
-    cy.get("#lessons").children().should("have.length", 2);
-    cy.get("#lesson-0").contains("lesson 1");
-    cy.get("#image-0").should(
-      "have.css",
-      "background-image",
-      `url("https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg")`
-    );
-    cy.get("#lesson-1").contains("lesson 2");
-    cy.get("#image-1").should(
-      "have.css",
-      "background-image",
-      `url("https://i.insider.com/5df126b679d7570ad2044f3e?width=1100&format=jpeg&auto=webp")`
-    );
+  it("disabled if missing GOOGLE_CLIENT_ID", () => {
+    cy.get("#login").should("not.exist");
   });
 
-  it("launches a lesson", () => {
-    cy.get("#lesson-0").click();
-    cy.location("pathname").should("contain", "/tutor");
-    cy.location("search").should("contain", "lesson=lesson1");
+  it("enabled if GOOGLE_CLIENT_ID is set", () => {
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.get("#login").should("not.be.disabled");
+  });
+
+  it("shows logout if logged in", () => {
+    cy.route({
+      method: "POST",
+      url: "**/graphql",
+      status: 200,
+      response: {
+        data: {
+          login: {
+            name: "Kayla",
+            email: "kayla@opentutor.com"
+          },
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.setCookie("accessToken", "accessToken");
+    cy.wait(1000);
+    cy.get("#logout").should("not.be.disabled");
+    cy.get("#logout").contains("Kayla");
+  });
+
+  it("logs out", () => {
+    cy.route({
+      method: "POST",
+      url: "**/graphql",
+      status: 200,
+      response: {
+        data: {
+          login: {
+            name: "Kayla",
+            email: "kayla@opentutor.com"
+          },
+        },
+        errors: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.setCookie("accessToken", "accessToken");
+    cy.wait(1000);
+    cy.get("#logout").click();
+    cy.get("#login").should("not.be.disabled");
   });
 });
