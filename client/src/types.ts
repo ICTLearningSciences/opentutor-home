@@ -24,63 +24,21 @@ export interface Connection<T> {
   pageInfo: PageInfo;
 }
 
-export interface Question {
-  text: string;
-  expectations: Expectation[];
-}
-
-export interface Expectation {
-  text: string;
-}
-
-export interface UserResponse {
-  text: string;
-  expectationScores: ExpectationScore[];
-}
-
-export interface ExpectationScore {
-  classifierGrade: string;
-  graderGrade?: string;
-}
-
 export interface Lesson {
-  id: string;
   lessonId: string;
   name: string;
-  intro: string;
-  question: string;
   image: string;
-  conclusion: string[];
-  expectations: LessonExpectation[];
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
-  features: any;
-  lastTrainedAt: string;
-  isTrainable: boolean;
-  deleted: boolean;
-}
-
-export interface LessonExpectation {
-  expectation: string;
-  features: any;
-  hints: Hint[];
-}
-
-export interface Hint {
-  text: string;
 }
 
 export interface FetchLessons {
   lessons: Connection<Lesson>;
 }
 
-export interface Login {
-  login: User;
+export interface LoginGoogle {
+  loginGoogle: User;
 }
 
 export interface User {
   id: string;
   name: string;
-  email: string;
 }

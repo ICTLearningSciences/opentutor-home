@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios from "axios";
-import { Lesson, FetchLessons, Connection, User, Login } from "types";
+import { Lesson, FetchLessons, Connection, User, LoginGoogle } from "types";
 
 export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
 export const TUTOR_ENDPOINT = process.env.TUTOR_ENDPOINT || "/tutor";
@@ -41,17 +41,16 @@ export async function fetchLessons(): Promise<Connection<Lesson>> {
   return result.data.data!.lessons;
 }
 
-export async function login(accessToken: string): Promise<User> {
-  const result = await axios.post<GQLResponse<Login>>(GRAPHQL_ENDPOINT, {
+export async function loginGoogle(accessToken: string): Promise<User> {
+  const result = await axios.post<GQLResponse<LoginGoogle>>(GRAPHQL_ENDPOINT, {
     query: `
       mutation {
-        login(accessToken: "${accessToken}"){
-          id
+        loginGoogle(accessToken: "${accessToken}"){
           name
           email
         }
       }
     `,
   });
-  return result.data.data!.login;
+  return result.data.data!.loginGoogle;
 }

@@ -4,96 +4,61 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-describe("Login", () => {
-  beforeEach(() => {
-    cy.server();
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          lessons: {
-            edges: [
-              {
-                node: {
-                  lessonId: "lesson1",
-                  name: "lesson 1",
-                },
-              },
-              {
-                node: {
-                  lessonId: "lesson2",
-                  name: "lesson 2",
-                },
-              },
-            ],
+import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
+
+function cyMockLessons(cy) {
+  cyMockGraphQL(cy, "lessons", {
+    lessons: {
+      edges: [
+        {
+          node: {
+            lessonId: "lesson1",
+            name: "lesson 1",
           },
         },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    cy.visit("/");
+        {
+          node: {
+            lessonId: "lesson2",
+            name: "lesson 2",
+          },
+        },
+      ],
+    },
   });
+}
 
+describe("Login", () => {
   it("disabled if missing GOOGLE_CLIENT_ID", () => {
+    cySetup(cy);
+    cyMockLessons(cy);
+    cy.visit("/");
     cy.get("#login").should("not.exist");
   });
 
   it("enabled if GOOGLE_CLIENT_ID is set", () => {
+    cySetup(cy);
+    cyMockLessons(cy);
     cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cy.visit("/");
     cy.get("#login").should("not.be.disabled");
   });
 
   it("shows logout if logged in", () => {
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          login: {
-            name: "Kayla",
-            email: "kayla@opentutor.com"
-          },
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
-    cy.setCookie("accessToken", "accessToken");
-    cy.wait(1000);
+    cySetup(cy);
+    cyMockLessons(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/");
+    cy.wait("@loginGoogle");
     cy.get("#logout").should("not.be.disabled");
     cy.get("#logout").contains("Kayla");
   });
 
   it("logs out", () => {
-    cy.route({
-      method: "POST",
-      url: "**/graphql",
-      status: 200,
-      response: {
-        data: {
-          login: {
-            name: "Kayla",
-            email: "kayla@opentutor.com"
-          },
-        },
-        errors: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
-    cy.setCookie("accessToken", "accessToken");
-    cy.wait(1000);
+    cySetup(cy);
+    cyMockLessons(cy);
+    cyLoginGoogle(cy);
+    cy.visit("/");
+    cy.wait("@loginGoogle");
     cy.get("#logout").click();
     cy.get("#login").should("not.be.disabled");
   });

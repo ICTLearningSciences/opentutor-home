@@ -15,7 +15,7 @@ import {
 import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, login } from "api";
+import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, loginGoogle } from "api";
 import { getClientID } from "config";
 import { User } from "types";
 
@@ -59,7 +59,7 @@ const Header = (): JSX.Element => {
 
   React.useEffect(() => {
     if (cookies.accessToken) {
-      login(cookies.accessToken).then((user: User) => {
+      loginGoogle(cookies.accessToken).then((user: User) => {
         setUsername(user.name);
       });
     }
