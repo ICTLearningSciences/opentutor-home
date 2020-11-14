@@ -1,22 +1,22 @@
-FROM node:12.18.3 as builder
+FROM node:14.15.0 as builder
 ARG NODE_ENV
 ENV CYPRESS_INSTALL_BINARY=0
 RUN apt-get update && \
     apt-get install -y \
-        build-essential \
-        libgif-dev \
-        libglu1 \
-        libjpeg-dev \
-        libpng-dev \
-        libtiff-dev \
-        libxi-dev && \
+    build-essential \
+    libgif-dev \
+    libglu1 \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    libxi-dev && \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /build
 COPY client ./client
 RUN cd client && \
     npm ci && \
     npm run build
-FROM node:12.18.3-slim
+FROM node:14.15.0-slim
 ENV TINI_VERSION=v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini 
