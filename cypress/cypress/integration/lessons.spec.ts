@@ -4,10 +4,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
 
-function cyMockLessons(cy) {
-  cyMockGraphQL(cy, "lessons", {
+function cyMockLessons(): MockGraphQLQuery {
+  return cyMockByQueryName("lessons", {
     lessons: {
       edges: [
         {
@@ -30,10 +30,12 @@ function cyMockLessons(cy) {
 describe("Latest Lessons", () => {
   it("displays list of lessons", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLessons(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
+    cy.wait("@lessons");
     cy.get("#lessons").children().should("have.length", 2);
     cy.get("#lesson-0").contains("lesson 1");
     cy.get("#lesson-1").contains("lesson 2");
@@ -41,10 +43,12 @@ describe("Latest Lessons", () => {
 
   it("launches a lesson", () => {
     cySetup(cy);
-    cyLoginGoogle(cy);
-    cyMockLessons(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
+    cy.wait("@lessons");
     cy.get("#lesson-0").click();
     cy.location("pathname").should("contain", "/tutor");
     cy.location("search").should("contain", "lesson=lesson1");

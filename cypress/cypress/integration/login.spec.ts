@@ -4,10 +4,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL } from "../support/functions";
+import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
 
-function cyMockLessons(cy) {
-  cyMockGraphQL(cy, "lessons", {
+function cyMockLessons(): MockGraphQLQuery {
+  return cyMockByQueryName("lessons", {
     lessons: {
       edges: [
         {
@@ -30,14 +30,18 @@ function cyMockLessons(cy) {
 describe("Login", () => {
   it("disabled if missing GOOGLE_CLIENT_ID", () => {
     cySetup(cy);
-    cyMockLessons(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyMockLessons()],
+    });
     cy.visit("/");
     cy.get("#login").should("not.exist");
   });
 
   it("enabled if GOOGLE_CLIENT_ID is set", () => {
     cySetup(cy);
-    cyMockLessons(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyMockLessons()],
+    });
     cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
     cy.visit("/");
     cy.get("#login").should("not.be.disabled");
@@ -45,20 +49,24 @@ describe("Login", () => {
 
   it("shows logout if logged in", () => {
     cySetup(cy);
-    cyMockLessons(cy);
-    cyLoginGoogle(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
+    cy.wait("@lessons");
     cy.get("#logout").should("not.be.disabled");
     cy.get("#logout").contains("Kayla");
   });
 
   it("logs out", () => {
     cySetup(cy);
-    cyMockLessons(cy);
-    cyLoginGoogle(cy);
+    cyMockGraphQL(cy, {
+      mocks: [cyLoginGoogle(cy), cyMockLessons()],
+    });
     cy.visit("/");
     cy.wait("@loginGoogle");
+    cy.wait("@lessons");
     cy.get("#logout").click();
     cy.get("#login").should("not.be.disabled");
   });
