@@ -25,6 +25,7 @@ module.exports = {
           "TUTOR_ENDPOINT",
           "ADMIN_ENDPOINT",
           "GOOGLE_CLIENT_ID",
+          "API_SECRET",
         ],
       },
     },
