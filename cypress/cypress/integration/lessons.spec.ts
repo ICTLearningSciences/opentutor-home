@@ -4,26 +4,28 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
+import { cySetup, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName, cyLogin } from "../support/functions";
 
 function cyMockLessons(): MockGraphQLQuery {
   return cyMockByQueryName("lessons", {
-    lessons: {
-      edges: [
-        {
-          node: {
-            lessonId: "lesson1",
-            name: "lesson 1",
+    me: {
+      lessons: {
+        edges: [
+          {
+            node: {
+              lessonId: "lesson1",
+              name: "lesson 1",
+            },
           },
-        },
-        {
-          node: {
-            lessonId: "lesson2",
-            name: "lesson 2",
+          {
+            node: {
+              lessonId: "lesson2",
+              name: "lesson 2",
+            },
           },
-        },
-      ],
-    },
+        ],
+      }
+    }
   });
 }
 
@@ -31,10 +33,10 @@ describe("Latest Lessons", () => {
   it("displays list of lessons", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLessons()],
+      mocks: [cyLogin(cy), cyMockLessons()],
     });
     cy.visit("/");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lessons");
     cy.get("#lessons").children().should("have.length", 2);
     cy.get("#lesson-0").contains("lesson 1");
@@ -44,10 +46,10 @@ describe("Latest Lessons", () => {
   it("launches a lesson", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLessons()],
+      mocks: [cyLogin(cy), cyMockLessons()],
     });
     cy.visit("/");
-    cy.wait("@loginGoogle");
+    cy.wait("@login");
     cy.wait("@lessons");
     cy.get("#lesson-0").click();
     cy.location("pathname").should("contain", "/tutor");

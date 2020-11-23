@@ -30,15 +30,28 @@ export interface Lesson {
   image: string;
 }
 
-export interface FetchLessons {
-  lessons: Connection<Lesson>;
-}
-
-export interface LoginGoogle {
-  loginGoogle: User;
-}
-
 export interface User {
   id: string;
   name: string;
+  email: string;
+}
+
+export interface UserAccessToken {
+  user: User;
+  accessToken: string;
+  expirationDate: string;
+}
+
+export interface FetchLessons {
+  me: {
+    lessons: Connection<Lesson>;
+  };
+}
+
+export interface Login {
+  login: UserAccessToken;
+}
+
+export interface LoginGoogle {
+  loginGoogle: UserAccessToken;
 }
