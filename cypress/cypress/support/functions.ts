@@ -12,7 +12,7 @@ export interface MockGraphQLArgs {
   alias?: string;
 }
 
-export function cyMockByQueryName(query: string, data: any): MockGraphQLQuery {
+export function cyMockByQueryName(query: string, data: any, me = false): MockGraphQLQuery {
   return (req: any, grapqlBody: any) => {
     const q = grapqlBody.query.replace(/\s+/g, " ").replace("\n", "").trim();
     if (q.indexOf(`{ ${query}`) !== -1) {
@@ -48,14 +48,17 @@ export function cyMockGraphQL(cy, args: MockGraphQLArgs): void {
   }
 }
 
-export function cyLoginGoogle(cy): MockGraphQLQuery {
-  cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+export function cyLogin(cy): MockGraphQLQuery {
+  cy.route("**/config", { GOOGLE_CLIENT_ID: "test", API_SECRET: "test" });
   cy.setCookie("accessToken", "accessToken");
-  return cyMockByQueryName("loginGoogle", {
-    loginGoogle: {
-      id: "kayla",
-      name: "Kayla",
-      email: "kayla@opentutor.com",
-    },
+  return cyMockByQueryName("login", {
+    login: {
+      user: {
+        id: "kayla",
+        name: "Kayla",
+        email: "kayla@opentutor.com",
+      },
+      accessToken: 'test'
+    }
   });
 }

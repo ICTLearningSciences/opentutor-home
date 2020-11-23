@@ -5,8 +5,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import { Link } from "gatsby";
 import { useCookies } from "react-cookie";
+import { Link } from "gatsby";
 import {
   GoogleLogin,
   GoogleLoginResponse,
@@ -15,9 +15,9 @@ import {
 import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, loginGoogle } from "api";
+import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, loginGoogle, login } from "api";
 import { getClientID } from "config";
-import { User } from "types";
+import { UserAccessToken } from "types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,9 +58,10 @@ const Header = (): JSX.Element => {
   }, []);
 
   React.useEffect(() => {
-    if (cookies.accessToken) {
-      loginGoogle(cookies.accessToken).then((user: User) => {
-        setUsername(user.name);
+    if (cookies.accessToken && !username) {
+      login(cookies.accessToken).then((token: UserAccessToken) => {
+        setUsername(token.user.name);
+        setCookie("accessToken", token.accessToken, { path: "/" });
       });
     }
   }, [cookies]);
@@ -72,9 +73,10 @@ const Header = (): JSX.Element => {
       return;
     }
     const loginResponse = response as GoogleLoginResponse;
-    setCookie("accessToken", loginResponse.accessToken, { path: "/" });
-    setUsername(loginResponse.profileObj.givenName);
-    window.location.href = ADMIN_ENDPOINT;
+    loginGoogle(loginResponse.accessToken).then((token: UserAccessToken) => {
+      setCookie("accessToken", token.accessToken, { path: "/" });
+      window.location.href = ADMIN_ENDPOINT;
+    });
   };
 
   const onLoginFailed = (response: {
