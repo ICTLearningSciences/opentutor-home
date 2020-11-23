@@ -13,3 +13,11 @@ export async function getClientID(): Promise<string> {
   const config = await axios.get("/config");
   return config.data["GOOGLE_CLIENT_ID"];
 }
+
+export async function getApiKey(): Promise<string> {
+  if (process.env.API_SECRET) {
+    return process.env.API_SECRET;
+  }
+  const config = await axios.get("/config");
+  return config.data["API_SECRET"];
+}

@@ -5,7 +5,15 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios from "axios";
-import { Lesson, FetchLessons, Connection, User, LoginGoogle } from "types";
+import {
+  Lesson,
+  FetchLessons,
+  Connection,
+  Login,
+  LoginGoogle,
+  UserAccessToken,
+} from "types";
+import { getApiKey } from "config";
 
 export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
 export const TUTOR_ENDPOINT = process.env.TUTOR_ENDPOINT || "/tutor";
@@ -16,11 +24,23 @@ interface GQLResponse<T> {
   data?: T;
 }
 
-export async function fetchLessons(): Promise<Connection<Lesson>> {
+export async function fetchLessons(
+  accessToken?: string
+): Promise<Connection<Lesson>> {
   const filter = { image: { $nin: [null, ""] } };
+  const headers: any = {};
+  if (accessToken) {
+    headers["Authorization"] = `bearer ${accessToken}`;
+  } else {
+    const API_SECRET = await getApiKey();
+    headers["opentutor-api-req"] = "true";
+    headers["Authorization"] = `bearer ${API_SECRET}`;
+  }
   const result = await axios.post<GQLResponse<FetchLessons>>(GRAPHQL_ENDPOINT, {
+    headers,
     query: `
-        query {
+      query {
+        me {
           lessons(
             filter:"${encodeURI(JSON.stringify(filter))}"
             sortBy:"updatedAt",
@@ -35,22 +55,44 @@ export async function fetchLessons(): Promise<Connection<Lesson>> {
             }
           }
         }
-      `,
+      }
+    `,
   });
-
-  return result.data.data!.lessons;
+  return result.data.data!.me.lessons;
 }
 
-export async function loginGoogle(accessToken: string): Promise<User> {
+export async function loginGoogle(
+  accessToken: string
+): Promise<UserAccessToken> {
   const result = await axios.post<GQLResponse<LoginGoogle>>(GRAPHQL_ENDPOINT, {
     query: `
       mutation {
-        loginGoogle(accessToken: "${accessToken}"){
-          name
-          email
+        loginGoogle(accessToken: "${accessToken}") {
+          user {
+            name
+            email
+          }
+          accessToken
         }
       }
     `,
   });
   return result.data.data!.loginGoogle;
+}
+
+export async function login(accessToken: string): Promise<UserAccessToken> {
+  const result = await axios.post<GQLResponse<Login>>(GRAPHQL_ENDPOINT, {
+    query: `
+      mutation {
+        login(accessToken: "${accessToken}") {
+          user {
+            name
+            email
+          }
+          accessToken
+        }
+      }
+    `,
+  });
+  return result.data.data!.login;
 }

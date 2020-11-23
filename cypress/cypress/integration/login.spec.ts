@@ -4,26 +4,28 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyLoginGoogle, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName } from "../support/functions";
+import { cySetup, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName, cyLogin } from "../support/functions";
 
 function cyMockLessons(): MockGraphQLQuery {
   return cyMockByQueryName("lessons", {
-    lessons: {
-      edges: [
-        {
-          node: {
-            lessonId: "lesson1",
-            name: "lesson 1",
+    me: {
+      lessons: {
+        edges: [
+          {
+            node: {
+              lessonId: "lesson1",
+              name: "lesson 1",
+            },
           },
-        },
-        {
-          node: {
-            lessonId: "lesson2",
-            name: "lesson 2",
+          {
+            node: {
+              lessonId: "lesson2",
+              name: "lesson 2",
+            },
           },
-        },
-      ],
-    },
+        ],
+      },
+    }
   });
 }
 
@@ -50,11 +52,9 @@ describe("Login", () => {
   it("shows logout if logged in", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLessons()],
+      mocks: [cyLogin(cy), cyMockLessons()],
     });
     cy.visit("/");
-    cy.wait("@loginGoogle");
-    cy.wait("@lessons");
     cy.get("#logout").should("not.be.disabled");
     cy.get("#logout").contains("Kayla");
   });
@@ -62,11 +62,9 @@ describe("Login", () => {
   it("logs out", () => {
     cySetup(cy);
     cyMockGraphQL(cy, {
-      mocks: [cyLoginGoogle(cy), cyMockLessons()],
+      mocks: [cyLogin(cy), cyMockLessons()],
     });
     cy.visit("/");
-    cy.wait("@loginGoogle");
-    cy.wait("@lessons");
     cy.get("#logout").click();
     cy.get("#login").should("not.be.disabled");
   });
