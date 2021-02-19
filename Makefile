@@ -35,7 +35,7 @@ LICENSE_HEADER:
 
 .PHONY: license
 license: LICENSE LICENSE_HEADER
-	cd client && npm run license:fix
+	npm run license:fix
 
 PHONY: test
 test:
@@ -70,7 +70,7 @@ test-types:
 
 .PHONY: test-license
 test-license: LICENSE LICENSE_HEADER
-	cd client && npm run test:license
+	npm run test:license
 
 .PHONY: test-e2e
 test-e2e:

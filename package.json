@@ -1,0 +1,24 @@
+{
+  "name": "opentutor-home",
+  "version": "1.0.0",
+  "description": "web ui for opentutor home page",
+  "main": "index.js",
+  "scripts": {
+    "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
+    "test:license": "license-check-and-add check -f license-config.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opentutor/opentutor-home.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/opentutor/opentutor-home/issues"
+  },
+  "homepage": "https://github.com/opentutor/opentutor-home#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "license-check-and-add": "^4.0.2"
+  }
+}

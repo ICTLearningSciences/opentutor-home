@@ -19,3 +19,8 @@
 !cypress/*/*.ts
 !cypress/*/*.jsx
 !cypress/*/*.tsx
+
+!docker/*.js
+!docker/*.ts
+!docker/*.jsx
+!docker/*.tsx
