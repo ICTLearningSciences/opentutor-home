@@ -19,15 +19,36 @@ export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
 export const TUTOR_ENDPOINT = process.env.TUTOR_ENDPOINT || "/tutor";
 export const ADMIN_ENDPOINT = process.env.ADMIN_ENDPOINT || "/admin";
 
+interface GQLRequest {
+  query: string;
+  variables?: Record<string, unknown>;
+}
+
 interface GQLResponse<T> {
   errors?: { message: string }[];
   data?: T;
 }
 
+async function fetchGql<T>(
+  req: GQLRequest,
+  headers?: Record<string, string>
+): Promise<T> {
+  const result = await axios.post<GQLResponse<T>>(GRAPHQL_ENDPOINT, req, {
+    headers: headers || {},
+  });
+  if (!result.data.data) {
+    throw new Error(
+      Array.isArray(result.data.errors)
+        ? JSON.stringify(result.data.errors)
+        : `failed to return expected data for query ${JSON.stringify(req)}`
+    );
+  }
+  return result.data.data;
+}
+
 export async function fetchLessons(
   accessToken?: string
 ): Promise<Connection<Lesson>> {
-  const filter = { image: { $nin: [null, ""] } };
   const headers: any = {};
   if (accessToken) {
     headers["Authorization"] = `bearer ${accessToken}`;
@@ -36,14 +57,13 @@ export async function fetchLessons(
     headers["opentutor-api-req"] = "true";
     headers["Authorization"] = `bearer ${API_SECRET}`;
   }
-  const result = await axios.post<GQLResponse<FetchLessons>>(
-    GRAPHQL_ENDPOINT,
+  const result = await fetchGql<FetchLessons>(
     {
       query: `
-      query {
+      query Lessons($filter: String!){
         me {
           lessons(
-            filter:"${encodeURI(JSON.stringify(filter))}"
+            filter: $filter,
             sortBy:"updatedAt",
             limit:5,
           ) {
@@ -58,19 +78,22 @@ export async function fetchLessons(
         }
       }
     `,
+      variables: {
+        filter: JSON.stringify({ image: { $nin: [null, ""] } }),
+      },
     },
     { headers: headers }
   );
-  return result.data.data!.me.lessons;
+  return result.me.lessons;
 }
 
 export async function loginGoogle(
   accessToken: string
 ): Promise<UserAccessToken> {
-  const result = await axios.post<GQLResponse<LoginGoogle>>(GRAPHQL_ENDPOINT, {
+  const result = await fetchGql<LoginGoogle>({
     query: `
-      mutation {
-        loginGoogle(accessToken: "${accessToken}") {
+      mutation LoginGoogle($accessToken: String!) {
+        loginGoogle(accessToken: $accessToken") {
           user {
             name
             email
@@ -79,15 +102,18 @@ export async function loginGoogle(
         }
       }
     `,
+    variables: {
+      accessToken,
+    },
   });
-  return result.data.data!.loginGoogle;
+  return result.loginGoogle;
 }
 
 export async function login(accessToken: string): Promise<UserAccessToken> {
-  const result = await axios.post<GQLResponse<Login>>(GRAPHQL_ENDPOINT, {
+  const result = await fetchGql<Login>({
     query: `
-      mutation {
-        login(accessToken: "${accessToken}") {
+      mutation Login($accessToken: String!) {
+        login(accessToken: $accessToken) {
           user {
             name
             email
@@ -96,6 +122,9 @@ export async function login(accessToken: string): Promise<UserAccessToken> {
         }
       }
     `,
+    variables: {
+      accessToken,
+    },
   });
-  return result.data.data!.login;
+  return result.login;
 }

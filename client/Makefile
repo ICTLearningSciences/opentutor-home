@@ -2,20 +2,8 @@ CYPRESS_IMAGE?=cypress/base:12
 CYPRESS_DOCKER_ENTRYPOINT?=/bin/bash
 CYPRESS_DOCKER_CACHE=$(PWD)/.cypress-docker
 
-.env.development:
-	@echo "GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/" >> .env.development
-	@echo "Set up  a default .env.development file"
-	@echo "that configures GRAPHQL_ENDPOINT=https://dev-opentutor.pal3.org/graphql/"
-	@echo "and configures CLASSIFIER_ENTRYPOINT=https://dev-opentutor.pal3.org/classifier/."
-	@echo "This file should not be committed. "
-	@echo "Feel free to change to point to a local server if you're running one."
-
-.PHONY: clean-cypress-snapshot-cache
-clean-cypress-snapshot-cache:
-	rm -rf $(CYPRESS_DOCKER_CACHE)
-
 .PHONY: clean
-clean: clean-cypress-snapshot-cache
+clean:
 	rm -rf .cache public
 
 .PHONY: cypress-docker
@@ -43,7 +31,7 @@ dependencies-update:
 	npm run dependencies-update
 
 .PHONY: develop
-develop: .env.development node_modules/gatsby-cli
+develop: node_modules/gatsby
 	npx gatsby develop
 
 .PHONY: format
@@ -56,7 +44,7 @@ node_modules/cypress:
 node_modules/eslint:
 	$(MAKE) install
 
-node_modules/gatsby-cli:
+node_modules/gatsby:
 	$(MAKE) install
 
 node_modules/jest:

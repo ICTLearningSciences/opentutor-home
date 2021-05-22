@@ -4,10 +4,16 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { cySetup, cyMockGraphQL, MockGraphQLQuery, cyMockByQueryName, cyLogin } from "../support/functions";
+import {
+  cySetup,
+  cyInterceptGraphQL,
+  MockGraphQLQuery,
+  mockGQL,
+  cyLogin,
+} from "../support/functions";
 
 function cyMockLessons(): MockGraphQLQuery {
-  return cyMockByQueryName("lessons", {
+  return mockGQL("lessons", {
     me: {
       lessons: {
         edges: [
@@ -25,47 +31,39 @@ function cyMockLessons(): MockGraphQLQuery {
           },
         ],
       },
-    }
+    },
   });
 }
 
 describe("Login", () => {
   it("disabled if missing GOOGLE_CLIENT_ID", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyMockLessons()],
-    });
+    cyInterceptGraphQL(cy, [cyMockLessons()]);
     cy.visit("/");
-    cy.get("#login").should("not.exist");
+    cy.get("[data-cy=login]").should("not.exist");
   });
 
   it("enabled if GOOGLE_CLIENT_ID is set", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyMockLessons()],
-    });
-    cy.route("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cyInterceptGraphQL(cy, [cyMockLessons()]);
+    cy.intercept("**/config", { GOOGLE_CLIENT_ID: "test" });
     cy.visit("/");
-    cy.get("#login").should("not.be.disabled");
+    cy.get("[data-cy=login]").should("not.be.disabled");
   });
 
   it("shows logout if logged in", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
-    });
+    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons()]);
     cy.visit("/");
-    cy.get("#logout").should("not.be.disabled");
-    cy.get("#logout").contains("Kayla");
+    cy.get("[data-cy=logout]").should("not.be.disabled");
+    cy.get("[data-cy=logout]").contains("Kayla");
   });
 
   it("logs out", () => {
     cySetup(cy);
-    cyMockGraphQL(cy, {
-      mocks: [cyLogin(cy), cyMockLessons()],
-    });
+    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons()]);
     cy.visit("/");
-    cy.get("#logout").click();
-    cy.get("#login").should("not.be.disabled");
+    cy.get("[data-cy=logout]").click();
+    cy.get("[data-cy=login]").should("not.be.disabled");
   });
 });

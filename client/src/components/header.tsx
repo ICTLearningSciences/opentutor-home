@@ -58,12 +58,23 @@ const Header = (): JSX.Element => {
   }, []);
 
   React.useEffect(() => {
+    let mounted = true;
     if (cookies.accessToken && !username) {
       login(cookies.accessToken).then((token: UserAccessToken) => {
+        if (!mounted) {
+          return;
+        }
+        if (!(token && token.user)) {
+          console.error("token user is null");
+          return;
+        }
         setUsername(token.user.name);
-        setCookie("accessToken", token.accessToken, { path: "/" });
+        setCookie("accessToken", token.accessToken || "", { path: "/" });
       });
     }
+    return () => {
+      mounted = false;
+    };
   }, [cookies]);
 
   const onLoginSuccess = (
@@ -100,7 +111,7 @@ const Header = (): JSX.Element => {
 
     return cookies.accessToken ? (
       <Button
-        id="logout"
+        data-cy="logout"
         startIcon={
           <AccountCircle
             className={[classes.loginButton, classes.link].join(" ")}
@@ -120,7 +131,7 @@ const Header = (): JSX.Element => {
         cookiePolicy={"single_host_origin"}
         render={(renderProps) => (
           <Button
-            id="login"
+            data-cy="login"
             style={{ color: "white" }}
             onClick={renderProps.onClick}
             disabled={renderProps.disabled}
