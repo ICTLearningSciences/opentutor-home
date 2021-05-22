@@ -10,6 +10,7 @@ import { List, Card, ListItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { fetchLessons, TUTOR_ENDPOINT } from "api";
 import { Connection, Edge, Lesson } from "types";
+import { isUint16Array } from "util/types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,13 +61,20 @@ export const LatestLessons = (): JSX.Element => {
   const [hover, setHover] = React.useState(-1);
 
   React.useEffect(() => {
+    let mounted = true;
     fetchLessons(cookies.accessToken)
       .then((lessons) => {
+        if (!mounted) {
+          return;
+        }
         if (lessons) {
           setLessons(lessons);
         }
       })
       .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   function launchLesson(lessonId: string): void {
