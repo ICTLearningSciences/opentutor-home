@@ -10,27 +10,26 @@ import {
   MockGraphQLQuery,
   mockGQL,
   cyLogin,
+  cyMockConfig,
 } from "../support/functions";
 
 function cyMockLessons(): MockGraphQLQuery {
   return mockGQL("lessons", {
-    me: {
-      lessons: {
-        edges: [
-          {
-            node: {
-              lessonId: "lesson1",
-              name: "lesson 1",
-            },
+    lessons: {
+      edges: [
+        {
+          node: {
+            lessonId: "lesson1",
+            name: "lesson 1",
           },
-          {
-            node: {
-              lessonId: "lesson2",
-              name: "lesson 2",
-            },
+        },
+        {
+          node: {
+            lessonId: "lesson2",
+            name: "lesson 2",
           },
-        ],
-      },
+        },
+      ],
     },
   });
 }
@@ -45,15 +44,14 @@ describe("Login", () => {
 
   it("enabled if GOOGLE_CLIENT_ID is set", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyMockLessons()]);
-    cy.intercept("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cyInterceptGraphQL(cy, [cyMockLessons(), cyMockConfig()]);
     cy.visit("/");
     cy.get("[data-cy=login]").should("not.be.disabled");
   });
 
   it("shows logout if logged in", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons()]);
+    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons(), cyMockConfig()]);
     cy.visit("/");
     cy.get("[data-cy=logout]").should("not.be.disabled");
     cy.get("[data-cy=logout]").contains("Kayla");
@@ -61,7 +59,7 @@ describe("Login", () => {
 
   it("logs out", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons()]);
+    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons(), cyMockConfig()]);
     cy.visit("/");
     cy.get("[data-cy=logout]").click();
     cy.get("[data-cy=login]").should("not.be.disabled");

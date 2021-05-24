@@ -5,6 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios from "axios";
+import { AppConfig } from "config";
 import {
   Lesson,
   FetchLessons,
@@ -13,7 +14,6 @@ import {
   LoginGoogle,
   UserAccessToken,
 } from "types";
-import { getApiKey } from "config";
 
 export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
 export const TUTOR_ENDPOINT = process.env.TUTOR_ENDPOINT || "/tutor";
@@ -46,45 +46,43 @@ async function fetchGql<T>(
   return result.data.data;
 }
 
-export async function fetchLessons(
-  accessToken?: string
-): Promise<Connection<Lesson>> {
-  const headers: any = {};
-  if (accessToken) {
-    headers["Authorization"] = `bearer ${accessToken}`;
-  } else {
-    const API_SECRET = await getApiKey();
-    headers["opentutor-api-req"] = "true";
-    headers["Authorization"] = `bearer ${API_SECRET}`;
-  }
-  const result = await fetchGql<FetchLessons>(
-    {
-      query: `
+export async function fetchAppConfig(): Promise<AppConfig> {
+  const result = await fetchGql<{ appConfig: AppConfig }>({
+    query: `
+      query {
+        appConfig {
+          googleClientId
+        }
+      }
+    `,
+  });
+  return result.appConfig;
+}
+
+export async function fetchLessons(): Promise<Connection<Lesson>> {
+  const result = await fetchGql<FetchLessons>({
+    query: `
       query Lessons($filter: String!){
-        me {
-          lessons(
-            filter: $filter,
-            sortBy:"updatedAt",
-            limit:5,
-          ) {
-            edges {
-              node {
-                lessonId
-                image
-                name
-              }
+        lessons(
+          filter: $filter,
+          sortBy:"updatedAt",
+          limit:5,
+        ) {
+          edges {
+            node {
+              lessonId
+              image
+              name
             }
           }
         }
       }
     `,
-      variables: {
-        filter: JSON.stringify({ image: { $nin: [null, ""] } }),
-      },
+    variables: {
+      filter: JSON.stringify({ image: { $nin: [null, ""] } }),
     },
-    { headers: headers }
-  );
-  return result.me.lessons;
+  });
+  return result.lessons;
 }
 
 export async function loginGoogle(

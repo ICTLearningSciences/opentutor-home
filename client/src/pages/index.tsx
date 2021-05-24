@@ -12,7 +12,7 @@ import LatestLessons from "components/latest-lessons";
 import Header from "components/header";
 import Footer from "components/footer";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     height: "100%",
     display: "flex",
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const IndexPage = () => {
+function IndexPage(): JSX.Element {
   const classes = useStyles();
 
   return (
@@ -34,6 +34,6 @@ const IndexPage = () => {
       <Footer />
     </div>
   );
-};
+}
 
 export default IndexPage;

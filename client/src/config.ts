@@ -4,20 +4,20 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import axios from "axios";
+import { fetchAppConfig } from "api";
+
+export interface AppConfig {
+  googleClientId: string;
+}
 
 export async function getClientID(): Promise<string> {
   if (process.env.GOOGLE_CLIENT_ID) {
     return process.env.GOOGLE_CLIENT_ID;
   }
-  const config = await axios.get("/config");
-  return config.data["GOOGLE_CLIENT_ID"];
-}
-
-export async function getApiKey(): Promise<string> {
-  if (process.env.API_SECRET) {
-    return process.env.API_SECRET;
+  try {
+    return (await fetchAppConfig()).googleClientId;
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
-  const config = await axios.get("/config");
-  return config.data["API_SECRET"];
 }

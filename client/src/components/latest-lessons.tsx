@@ -5,14 +5,12 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import { useCookies } from "react-cookie";
 import { List, Card, ListItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { fetchLessons, TUTOR_ENDPOINT } from "api";
 import { Connection, Edge, Lesson } from "types";
-import { isUint16Array } from "util/types";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     height: "100%",
     width: "100%",
@@ -56,13 +54,12 @@ const useStyles = makeStyles((theme) => ({
 
 export const LatestLessons = (): JSX.Element => {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [hover, setHover] = React.useState(-1);
 
   React.useEffect(() => {
     let mounted = true;
-    fetchLessons(cookies.accessToken)
+    fetchLessons()
       .then((lessons) => {
         if (!mounted) {
           return;
@@ -82,7 +79,7 @@ export const LatestLessons = (): JSX.Element => {
     window.location.href = path;
   }
   const onMouseOver = (i: number): void => setHover(i);
-  const onMouseOut = (i: number): void => setHover(-1);
+  const onMouseOut = (): void => setHover(-1);
 
   let list = undefined;
   if (lessons) {
@@ -100,7 +97,7 @@ export const LatestLessons = (): JSX.Element => {
             className={classes.card}
             style={{ backgroundImage: `url(${edge.node.image})` }}
             onMouseOver={() => onMouseOver(i)}
-            onMouseOut={() => onMouseOut(i)}
+            onMouseOut={() => onMouseOut()}
             elevation={hover === i ? 10 : 1}
           >
             <h2 className={classes.text}>{edge.node.name}</h2>

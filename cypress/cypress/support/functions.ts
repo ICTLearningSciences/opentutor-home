@@ -104,8 +104,13 @@ export function mockGQL(query: string, data: any | any[]): MockGraphQLQuery {
   };
 }
 
+export function cyMockConfig(): MockGraphQLQuery {
+  return mockGQL("appConfig", {
+    appConfig: { googleClientId: "test" }
+  });
+}
+
 export function cyLogin(cy): MockGraphQLQuery {
-  cy.intercept("**/config", { GOOGLE_CLIENT_ID: "test", API_SECRET: "test" });
   cy.setCookie("accessToken", "accessToken");
   return mockGQL("login", {
     login: {
