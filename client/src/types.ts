@@ -43,9 +43,7 @@ export interface UserAccessToken {
 }
 
 export interface FetchLessons {
-  me: {
-    lessons: Connection<Lesson>;
-  };
+  lessons: Connection<Lesson>;
 }
 
 export interface Login {

@@ -20,7 +20,7 @@ import editImg from "images/banners/edit.png";
 import gradeImg from "images/banners/grade.png";
 import trainImg from "images/banners/train.png";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: "100%",
     height: 300,
@@ -98,7 +98,7 @@ const banners: BannerData[] = [
   },
 ];
 
-export const Banner = (): JSX.Element => {
+export function Banner(): JSX.Element {
   const classes = useStyles();
 
   return (
@@ -137,6 +137,6 @@ export const Banner = (): JSX.Element => {
       </Slider>
     </div>
   );
-};
+}
 
 export default Banner;

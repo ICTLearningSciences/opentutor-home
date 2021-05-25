@@ -6,54 +6,48 @@ The full terms of this copyright and license should always be found in the root 
 */
 import {
   cySetup,
-  cyInterceptGraphQL,
   MockGraphQLQuery,
   mockGQL,
-  cyLogin,
+  cyMockDefault,
 } from "../support/functions";
 
 function cyMockLessons(): MockGraphQLQuery {
   return mockGQL("lessons", {
-    me: {
-      lessons: {
-        edges: [
-          {
-            node: {
-              lessonId: "lesson1",
-              name: "lesson 1",
-            },
-          },
-          {
-            node: {
-              lessonId: "lesson2",
-              name: "lesson 2",
-            },
-          },
-        ],
+    edges: [
+      {
+        node: {
+          lessonId: "lesson1",
+          name: "lesson 1",
+        },
       },
-    },
+      {
+        node: {
+          lessonId: "lesson2",
+          name: "lesson 2",
+        },
+      },
+    ],
   });
 }
 
 describe("Login", () => {
-  it("disabled if missing GOOGLE_CLIENT_ID", () => {
+  it("shows login button if no accessToken", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyMockLessons()]);
+    cyMockDefault(cy, { noAccessToken: true, gqlQueries: [cyMockLessons()] })
     cy.visit("/");
-    cy.get("[data-cy=login]").should("not.exist");
+    cy.get("[data-cy=login]").should("exist");
   });
 
-  it("enabled if GOOGLE_CLIENT_ID is set", () => {
+  it("login disabled if missing config", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyMockLessons()]);
-    cy.intercept("**/config", { GOOGLE_CLIENT_ID: "test" });
+    cyMockDefault(cy, { noAccessToken: true, noConfig: true, gqlQueries: [cyMockLessons()] })
     cy.visit("/");
-    cy.get("[data-cy=login]").should("not.be.disabled");
+    cy.get("[data-cy=login]").should("be.disabled");
   });
 
-  it("shows logout if logged in", () => {
+  it("shows logout button if logged in", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons()]);
+    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] })
     cy.visit("/");
     cy.get("[data-cy=logout]").should("not.be.disabled");
     cy.get("[data-cy=logout]").contains("Kayla");
@@ -61,9 +55,11 @@ describe("Login", () => {
 
   it("logs out", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons()]);
+    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] })
     cy.visit("/");
-    cy.get("[data-cy=logout]").click();
-    cy.get("[data-cy=login]").should("not.be.disabled");
+    cy.get("[data-cy=login]").should("not.exist");
+    cy.get("[data-cy=logout]").trigger("mouseover").click();
+    cy.get("[data-cy=login]").should("exist");
+    cy.get("[data-cy=logout]").should("not.exist");
   });
 });

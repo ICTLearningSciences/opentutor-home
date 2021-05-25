@@ -33,11 +33,6 @@ interface StaticResponse {
   throttleKbps?: number;
 }
 
-export interface MockGraphQLQuery {
-  query: string;
-  data: any;
-}
-
 function staticResponse(s: StaticResponse): StaticResponse {
   return {
     ...{
@@ -50,13 +45,14 @@ function staticResponse(s: StaticResponse): StaticResponse {
   };
 }
 
-export function cySetup(cy) {
-  cy.viewport(1280, 720);
+export interface MockGraphQLQuery {
+  query: string;
+  data: any | any[];
+  me: boolean;
 }
 
-export interface MockGraphQLArgs {
-  mocks: MockGraphQLQuery[];
-  alias?: string;
+export function cySetup(cy) {
+  cy.viewport(1280, 720);
 }
 
 export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
@@ -74,7 +70,15 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
         queryBody.indexOf(`{ ${mock.query} {`) !== -1
       ) {
         const data = Array.isArray(mock.data) ? mock.data : [mock.data];
-        const body = data[Math.min(queryCalls[mock.query], data.length - 1)];
+        const val = data[Math.min(queryCalls[mock.query], data.length - 1)];
+        const body = {};
+        if (mock.me) {
+          const _inner = {};
+          _inner[mock.query] = val;
+          body["me"] = _inner;
+        } else {
+          body[mock.query] = val;
+        }
         req.alias = mock.query;
         req.reply(
           staticResponse({
@@ -90,31 +94,62 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
       }
     }
     if (!handled) {
-      console.error(`failed to handle query for given mock queries`);
-      console.error(mocks.map((m) => m.query));
+      console.error(`failed to handle query for...`);
       console.error(req);
     }
   });
 }
 
-export function mockGQL(query: string, data: any | any[]): MockGraphQLQuery {
+export function mockGQL(
+  query: string,
+  data: any | any[],
+  me = false
+): MockGraphQLQuery {
   return {
     query,
     data,
+    me,
   };
 }
 
-export function cyLogin(cy): MockGraphQLQuery {
-  cy.intercept("**/config", { GOOGLE_CLIENT_ID: "test", API_SECRET: "test" });
-  cy.setCookie("accessToken", "accessToken");
-  return mockGQL("login", {
-    login: {
+export interface AppConfig {
+  googleClientId: string;
+}
+export const CONFIG_DEFAULT: AppConfig = {
+  googleClientId: "fake-google-client-id",
+};
+export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
+  return mockGQL("appConfig", { ...CONFIG_DEFAULT, ...(appConfig || {}) }, false);
+}
+
+export function cyMockDefault(
+  cy,
+  args: {
+    appConfig?: Partial<AppConfig>;
+    gqlQueries?: MockGraphQLQuery[];
+    noLogin?: boolean;
+    noConfig?: boolean;
+    noAccessToken?: boolean;
+  } = {}
+) {
+  const appConfig = args?.appConfig || {};
+  const gqlQueries = args?.gqlQueries || [];
+  if (!args.noConfig) {
+    gqlQueries.push(mockGQLConfig(appConfig))
+  }
+  if (!args.noAccessToken) {
+    cy.setCookie("accessToken", "accessToken");
+  }
+  if (!args.noLogin) {
+    gqlQueries.push(mockGQL("login", {
       user: {
         id: "kayla",
         name: "Kayla",
         email: "kayla@opentutor.com",
+        userRole: "author"
       },
-      accessToken: "test",
-    },
-  });
+      accessToken: "accessToken"
+    }, false))
+  }
+  cyInterceptGraphQL(cy, gqlQueries);
 }

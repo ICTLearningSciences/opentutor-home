@@ -10,7 +10,7 @@ import { AppBar, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ADMIN_ENDPOINT, TUTOR_ENDPOINT } from "api";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: "100%",
     alignItems: "center",
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Footer = (): JSX.Element => {
+function Footer(): JSX.Element {
   const classes = useStyles();
 
   return (
@@ -41,6 +41,6 @@ const Footer = (): JSX.Element => {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
 export default Footer;

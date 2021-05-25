@@ -6,45 +6,35 @@ The full terms of this copyright and license should always be found in the root 
 */
 import {
   cySetup,
-  cyInterceptGraphQL,
-  // cyMockGraphQL,
-  // MockGraphQLQuery,
-  // cyMockByQueryName,
   MockGraphQLQuery,
   mockGQL,
-  cyLogin,
+  cyMockDefault,
 } from "../support/functions";
 
 function cyMockLessons(): MockGraphQLQuery {
   return mockGQL("lessons", {
-    me: {
-      lessons: {
-        edges: [
-          {
-            node: {
-              lessonId: "lesson1",
-              name: "lesson 1",
-            },
-          },
-          {
-            node: {
-              lessonId: "lesson2",
-              name: "lesson 2",
-            },
-          },
-        ],
+    edges: [
+      {
+        node: {
+          lessonId: "lesson1",
+          name: "lesson 1",
+        },
       },
-    },
+      {
+        node: {
+          lessonId: "lesson2",
+          name: "lesson 2",
+        },
+      },
+    ],
   });
 }
 
 describe("Latest Lessons", () => {
   it("displays list of lessons", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons()]);
+    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] })
     cy.visit("/");
-    cy.wait("@login");
-    cy.wait("@lessons");
     cy.get("#lessons").children().should("have.length", 2);
     cy.get("#lesson-0").contains("lesson 1");
     cy.get("#lesson-1").contains("lesson 2");
@@ -52,10 +42,8 @@ describe("Latest Lessons", () => {
 
   it("launches a lesson", () => {
     cySetup(cy);
-    cyInterceptGraphQL(cy, [cyLogin(cy), cyMockLessons()]);
+    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] })
     cy.visit("/");
-    cy.wait("@login");
-    cy.wait("@lessons");
     cy.get("#lesson-0").click();
     cy.location("pathname").should("contain", "/tutor");
     cy.location("search").should("contain", "lesson=lesson1");

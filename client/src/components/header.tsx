@@ -52,9 +52,18 @@ const Header = (): JSX.Element => {
   const [username, setUsername] = React.useState<string>();
 
   React.useEffect(() => {
-    getClientID().then((id: string) => {
-      setClientId(id);
-    });
+    let mounted = true;
+    getClientID()
+      .then((id: string) => {
+        if (!mounted) {
+          return;
+        }
+        setClientId(id);
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   React.useEffect(() => {
@@ -104,9 +113,13 @@ const Header = (): JSX.Element => {
     setUsername("");
   };
 
-  const LoginButton = (): JSX.Element => {
+  function LoginButton(): JSX.Element {
     if (!googleClientId) {
-      return <div></div>;
+      return (
+        <Button data-cy="login" style={{ color: "white" }} disabled={true}>
+          Login
+        </Button>
+      );
     }
 
     return cookies.accessToken ? (
@@ -141,7 +154,7 @@ const Header = (): JSX.Element => {
         )}
       />
     );
-  };
+  }
 
   return (
     <div className={classes.root}>
