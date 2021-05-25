@@ -114,6 +114,14 @@ const Header = (): JSX.Element => {
   };
 
   function LoginButton(): JSX.Element {
+    if (!googleClientId) {
+      return (
+        <Button data-cy="login" style={{ color: "white" }} disabled={true}>
+          Login
+        </Button>
+      );
+    }
+
     return cookies.accessToken ? (
       <Button
         data-cy="logout"
@@ -139,7 +147,7 @@ const Header = (): JSX.Element => {
             data-cy="login"
             style={{ color: "white" }}
             onClick={renderProps.onClick}
-            disabled={renderProps.disabled || !googleClientId}
+            disabled={renderProps.disabled}
           >
             Login
           </Button>
