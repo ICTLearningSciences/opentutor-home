@@ -42,7 +42,7 @@ test:
 
 PHONY: test-all
 test-all:
-	$(MAKE) test-audit
+	#$(MAKE) test-audit
 	$(MAKE) test-format
 	$(MAKE) test-lint
 	$(MAKE) test-license
