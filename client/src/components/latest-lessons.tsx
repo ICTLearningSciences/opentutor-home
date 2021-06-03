@@ -86,14 +86,14 @@ export const LatestLessons = (): JSX.Element => {
     list = lessons.edges.map((edge: Edge<Lesson>, i: number) => {
       return (
         <ListItem
-          id={`lesson-${i}`}
+          data-cy={`lesson-${i}`}
           key={i}
           onClick={() => {
             launchLesson(edge.node.lessonId);
           }}
         >
           <Card
-            id={`image-${i}`}
+            data-cy={`image-${i}`}
             className={classes.card}
             style={{ backgroundImage: `url(${edge.node.image})` }}
             onMouseOver={() => onMouseOver(i)}
@@ -110,7 +110,7 @@ export const LatestLessons = (): JSX.Element => {
   return (
     <div className={classes.root}>
       <h2 className={classes.header}>Latest Lessons</h2>
-      <List id="lessons" className={classes.list}>
+      <List data-cy="lessons" className={classes.list}>
         {list}
       </List>
     </div>
