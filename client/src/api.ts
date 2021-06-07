@@ -91,7 +91,7 @@ export async function loginGoogle(
   const result = await fetchGql<LoginGoogle>({
     query: `
       mutation LoginGoogle($accessToken: String!) {
-        loginGoogle(accessToken: $accessToken") {
+        loginGoogle(accessToken: $accessToken) {
           user {
             name
             email
