@@ -119,7 +119,11 @@ export const CONFIG_DEFAULT: AppConfig = {
   googleClientId: "fake-google-client-id",
 };
 export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
-  return mockGQL("appConfig", { ...CONFIG_DEFAULT, ...(appConfig || {}) }, false);
+  return mockGQL(
+    "appConfig",
+    { ...CONFIG_DEFAULT, ...(appConfig || {}) },
+    false
+  );
 }
 
 export function cyMockDefault(
@@ -135,21 +139,27 @@ export function cyMockDefault(
   const appConfig = args?.appConfig || {};
   const gqlQueries = args?.gqlQueries || [];
   if (!args.noConfig) {
-    gqlQueries.push(mockGQLConfig(appConfig))
+    gqlQueries.push(mockGQLConfig(appConfig));
   }
   if (!args.noAccessToken) {
     cy.setCookie("accessToken", "accessToken");
   }
   if (!args.noLogin) {
-    gqlQueries.push(mockGQL("login", {
-      user: {
-        id: "kayla",
-        name: "Kayla",
-        email: "kayla@opentutor.com",
-        userRole: "author"
-      },
-      accessToken: "accessToken"
-    }, false))
+    gqlQueries.push(
+      mockGQL(
+        "login",
+        {
+          user: {
+            id: "kayla",
+            name: "Kayla",
+            email: "kayla@opentutor.com",
+            userRole: "author",
+          },
+          accessToken: "accessToken",
+        },
+        false
+      )
+    );
   }
   cyInterceptGraphQL(cy, gqlQueries);
 }
