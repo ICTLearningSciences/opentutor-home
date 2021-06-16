@@ -33,21 +33,25 @@ function cyMockLessons(): MockGraphQLQuery {
 describe("Login", () => {
   it("shows login button if no accessToken", () => {
     cySetup(cy);
-    cyMockDefault(cy, { noAccessToken: true, gqlQueries: [cyMockLessons()] })
+    cyMockDefault(cy, { noAccessToken: true, gqlQueries: [cyMockLessons()] });
     cy.visit("/");
     cy.get("[data-cy=login]").should("exist");
   });
 
   it("login disabled if missing config", () => {
     cySetup(cy);
-    cyMockDefault(cy, { noAccessToken: true, noConfig: true, gqlQueries: [cyMockLessons()] })
+    cyMockDefault(cy, {
+      noAccessToken: true,
+      noConfig: true,
+      gqlQueries: [cyMockLessons()],
+    });
     cy.visit("/");
     cy.get("[data-cy=login]").should("be.disabled");
   });
 
   it("shows logout button if logged in", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] })
+    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] });
     cy.visit("/");
     cy.get("[data-cy=logout]").should("not.be.disabled");
     cy.get("[data-cy=logout]").contains("Kayla");
@@ -55,7 +59,7 @@ describe("Login", () => {
 
   it("logs out", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] })
+    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] });
     cy.visit("/");
     cy.get("[data-cy=login]").should("not.exist");
     cy.get("[data-cy=logout]").trigger("mouseover").click();
