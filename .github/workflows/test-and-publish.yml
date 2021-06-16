@@ -13,9 +13,9 @@ jobs:
       # - name: Run audit
       #   run: cd client && npm run test:audit
       - name: Run format test
-        run: cd client && npm run test:format
+        run: npm run test:format
       - name: Run lint test
-        run: cd client && npm run test:lint
+        run: npm run test:lint
       - name: Run types test
         run: cd client && npm run test:types
       - name: Run license test

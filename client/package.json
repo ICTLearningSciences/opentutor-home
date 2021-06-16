@@ -39,9 +39,7 @@
     "gatsby-legacy-polyfills": "^1.5.0",
     "gatsby-plugin-eslint": "^3.0.0",
     "gatsby-plugin-material-ui": "^3.0.1",
-    "license-check-and-add": "^4.0.2",
     "npm-check-updates": "^11.5.13",
-    "prettier": "^2.3.0",
     "typescript": "^4.2.4"
   },
   "keywords": [
@@ -54,13 +52,9 @@
     "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
     "start": "npm run develop",
     "serve": "gatsby serve --prefix-paths",
-    "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
-    "test:license": "license-check-and-add check -f license-config.json",
     "test": "echo 'all tests currently cypress'",
-    "test:all": "npx run test:format && npx run test:lint && npx run test:audit && npx run test:types && npx run test:cypress && npx test",
     "test:audit": "npm audit --audit-level=moderate --production",
     "test:cypress": "npx run cy:run --spec 'cypress/**/*.spec.js'",
-    "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx}'",
     "test:lint": "eslint src --ext ts --ext tsx --ext js --ext jsx",
     "test:types": "tsc --noEmit",
     "test:watch": "jest --watch"
