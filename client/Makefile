@@ -34,6 +34,10 @@ dependencies-update:
 develop: node_modules/gatsby
 	npx gatsby develop
 
+.PHONY: pretty
+pretty:
+	cd .. && $(MAKE) format
+
 .PHONY: format
 format:
 	cd .. && $(MAKE) format
