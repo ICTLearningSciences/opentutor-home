@@ -12,21 +12,23 @@ import {
 } from "../support/functions";
 
 function cyMockLessons(): MockGraphQLQuery {
-  return mockGQL("lessons", {
-    edges: [
-      {
-        node: {
-          lessonId: "lesson1",
-          name: "lesson 1",
+  return mockGQL("Lessons", {
+    lessons: {
+      edges: [
+        {
+          node: {
+            lessonId: "lesson1",
+            name: "lesson 1",
+          },
         },
-      },
-      {
-        node: {
-          lessonId: "lesson2",
-          name: "lesson 2",
+        {
+          node: {
+            lessonId: "lesson2",
+            name: "lesson 2",
+          },
         },
-      },
-    ],
+      ],
+    },
   });
 }
 
