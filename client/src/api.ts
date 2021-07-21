@@ -49,7 +49,7 @@ async function fetchGql<T>(
 export async function fetchAppConfig(): Promise<AppConfig> {
   const result = await fetchGql<{ appConfig: AppConfig }>({
     query: `
-      query {
+      query FetchAppConfig{
         appConfig {
           googleClientId
         }

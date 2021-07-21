@@ -54,7 +54,6 @@ function staticResponse(s: StaticResponse): StaticResponse {
 export interface MockGraphQLQuery {
   query: string;
   data: any | any[];
-  me: boolean;
 }
 
 export function cySetup(cy) {
@@ -72,19 +71,12 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
     let handled = false;
     for (const mock of mocks) {
       if (
-        queryBody.indexOf(`{ ${mock.query}(`) !== -1 ||
-        queryBody.indexOf(`{ ${mock.query} {`) !== -1
+        queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[{(\\s]`))
       ) {
         const data = Array.isArray(mock.data) ? mock.data : [mock.data];
         const val = data[Math.min(queryCalls[mock.query], data.length - 1)];
-        const body = {};
-        if (mock.me) {
-          const _inner = {};
-          _inner[mock.query] = val;
-          body["me"] = _inner;
-        } else {
-          body[mock.query] = val;
-        }
+        let body = val;
+
         req.alias = mock.query;
         req.reply(
           staticResponse({
@@ -106,15 +98,10 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
   });
 }
 
-export function mockGQL(
-  query: string,
-  data: any | any[],
-  me = false
-): MockGraphQLQuery {
+export function mockGQL(query: string, data: any | any[]): MockGraphQLQuery {
   return {
     query,
     data,
-    me,
   };
 }
 
@@ -125,11 +112,9 @@ export const CONFIG_DEFAULT: AppConfig = {
   googleClientId: "fake-google-client-id",
 };
 export function mockGQLConfig(appConfig: Partial<AppConfig>): MockGraphQLQuery {
-  return mockGQL(
-    "appConfig",
-    { ...CONFIG_DEFAULT, ...(appConfig || {}) },
-    false
-  );
+  return mockGQL("FetchAppConfig", {
+    appConfig: { ...CONFIG_DEFAULT, ...(appConfig || {}) },
+  });
 }
 
 export function cyMockDefault(
@@ -152,9 +137,8 @@ export function cyMockDefault(
   }
   if (!args.noLogin) {
     gqlQueries.push(
-      mockGQL(
-        "login",
-        {
+      mockGQL("Login", {
+        login: {
           user: {
             id: "kayla",
             name: "Kayla",
@@ -163,8 +147,7 @@ export function cyMockDefault(
           },
           accessToken: "accessToken",
         },
-        false
-      )
+      })
     );
   }
   cyInterceptGraphQL(cy, gqlQueries);
