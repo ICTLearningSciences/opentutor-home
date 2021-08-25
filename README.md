@@ -87,11 +87,11 @@ Currently, this image is semantically versioned. When making changes that you wa
 To build/push a pre-release semver tag of `opentutor-home` for the current commit in your branch
 
 - create a [github release](https://github.com/ICTLearningSciences/opentutor-home/releases/new) **from your development branch** with tag format `/^\d+\.\d+\.\d+(-[a-z\d\-.]+)?$/` (e.g. `1.0.0-alpha.1`)
-- this will create a tag like `uscictdocker/opentutor-home:1.0.0-alpha.1`
+- this will create a tag like `opentutor/opentutor-home:1.0.0-alpha.1`
 
 
 
 Once your changes are approved and merged to main, you should create a release tag in semver format as follows:
 
 - create a [github release](https://github.com/ICTLearningSciences/opentutor-home/releases/new) **from main** with tag format `/^\d+\.\d+\.\d$/` (e.g. `1.0.0`)
-- this will create a tag like `uscictdocker/opentutor-home:1.0.0`
+- this will create a tag like `opentutor/opentutor-home:1.0.0`
