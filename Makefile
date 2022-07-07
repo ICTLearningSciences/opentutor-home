@@ -46,6 +46,10 @@ format: node_modules/prettier LICENSE LICENSE_HEADER
 license: LICENSE LICENSE_HEADER
 	npm run license:fix
 
+.PHONY: license-deploy
+license-deploy: node_modules/license-check-and-add LICENSE LICENSE_HEADER
+	LICENSE_CONFIG=${LICENSE_CONFIG} npm run license:deploy
+
 .PHONY: test
 test:
 	cd client && $(MAKE) test
