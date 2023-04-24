@@ -1,10 +1,14 @@
 import React from "react";
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider,
+} from "@mui/material/styles";
 import { CookiesProvider } from "react-cookie";
 
 import "css/style.css";
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       main: "#1b6a9c",
@@ -13,7 +17,9 @@ const theme = createMuiTheme({
 });
 
 export const wrapRootElement = ({ element }) => (
-  <MuiThemeProvider theme={theme}>
-    <CookiesProvider>{element}</CookiesProvider>
-  </MuiThemeProvider>
+  <StyledEngineProvider injectFirst>
+    <ThemeProvider theme={theme}>
+      <CookiesProvider>{element}</CookiesProvider>
+    </ThemeProvider>
+  </StyledEngineProvider>
 );

@@ -24,6 +24,23 @@ export interface Connection<T> {
   pageInfo: PageInfo;
 }
 
+export interface MediaProps {
+  name: string;
+  value?: string;
+}
+
+export interface Media {
+  url: string;
+  type: string;
+  props?: MediaProps[];
+}
+
+export interface GqlLesson {
+  lessonId: string;
+  name: string;
+  media?: Media;
+}
+
 export interface Lesson {
   lessonId: string;
   name: string;
@@ -42,8 +59,8 @@ export interface UserAccessToken {
   expirationDate: string;
 }
 
-export interface FetchLessons {
-  lessons: Connection<Lesson>;
+export interface GqlFetchLessons {
+  lessons: Connection<GqlLesson>;
 }
 
 export interface Login {

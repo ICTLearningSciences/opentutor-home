@@ -12,15 +12,15 @@ import {
   CardContent,
   Typography,
   Button,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 import { ADMIN_ENDPOINT } from "api";
 import chatImg from "images/banners/chat.png";
 import editImg from "images/banners/edit.png";
 import gradeImg from "images/banners/grade.png";
 import trainImg from "images/banners/train.png";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({ name: { Banner } })(() => ({
   root: {
     width: "100%",
     height: 300,
@@ -99,7 +99,7 @@ const banners: BannerData[] = [
 ];
 
 export function Banner(): JSX.Element {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <div className={classes.root}>

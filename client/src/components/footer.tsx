@@ -6,11 +6,11 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import { Link } from "gatsby";
-import { AppBar, Toolbar } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { AppBar, Toolbar } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 import { ADMIN_ENDPOINT, TUTOR_ENDPOINT } from "api";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({ name: { Footer } })(() => ({
   root: {
     width: "100%",
     alignItems: "center",
@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Footer(): JSX.Element {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <AppBar className={classes.root} position="static">

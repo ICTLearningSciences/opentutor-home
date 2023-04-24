@@ -5,12 +5,76 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import { List, Card, ListItem } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { List, Card, ListItem } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 import { fetchLessons, TUTOR_ENDPOINT } from "api";
-import { Connection, Edge, Lesson } from "types";
+import { Lesson } from "types";
 
-const useStyles = makeStyles(() => ({
+export const LatestLessons = (): JSX.Element => {
+  const { classes } = useStyles();
+  const [lessons, setLessons] = React.useState<Lesson[]>();
+  const [hover, setHover] = React.useState(-1);
+
+  React.useEffect(() => {
+    let mounted = true;
+    fetchLessons()
+      .then((lessons) => {
+        if (!mounted) {
+          return;
+        }
+        if (lessons) {
+          setLessons(lessons);
+        }
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  function launchLesson(lessonId: string): void {
+    const path = `${TUTOR_ENDPOINT}/?lesson=${lessonId}`;
+    window.location.href = path;
+  }
+  const onMouseOver = (i: number): void => setHover(i);
+  const onMouseOut = (): void => setHover(-1);
+
+  let list = undefined;
+  if (lessons) {
+    list = lessons.map((lesson: Lesson, i: number) => {
+      return (
+        <ListItem
+          data-cy={`lesson-${i}`}
+          key={i}
+          onClick={() => {
+            launchLesson(lesson.lessonId);
+          }}
+        >
+          <Card
+            data-cy={`image-${i}`}
+            className={classes.card}
+            style={{ backgroundImage: `url(${lesson.image})` }}
+            onMouseOver={() => onMouseOver(i)}
+            onMouseOut={() => onMouseOut()}
+            elevation={hover === i ? 10 : 1}
+          >
+            <h2 className={classes.text}>{lesson.name}</h2>
+          </Card>
+        </ListItem>
+      );
+    });
+  }
+
+  return (
+    <div className={classes.root}>
+      <h2 className={classes.header}>Latest Lessons</h2>
+      <List data-cy="lessons" className={classes.list}>
+        {list}
+      </List>
+    </div>
+  );
+};
+const useStyles = makeStyles({ name: { LatestLessons } })(() => ({
   root: {
     height: "100%",
     width: "100%",
@@ -51,70 +115,5 @@ const useStyles = makeStyles(() => ({
     boxShadow: "0 0 5rem rgba(0, 0, 0, .5)",
   },
 }));
-
-export const LatestLessons = (): JSX.Element => {
-  const classes = useStyles();
-  const [lessons, setLessons] = React.useState<Connection<Lesson>>();
-  const [hover, setHover] = React.useState(-1);
-
-  React.useEffect(() => {
-    let mounted = true;
-    fetchLessons()
-      .then((lessons) => {
-        if (!mounted) {
-          return;
-        }
-        if (lessons) {
-          setLessons(lessons);
-        }
-      })
-      .catch((err) => console.error(err));
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  function launchLesson(lessonId: string): void {
-    const path = `${TUTOR_ENDPOINT}/?lesson=${lessonId}`;
-    window.location.href = path;
-  }
-  const onMouseOver = (i: number): void => setHover(i);
-  const onMouseOut = (): void => setHover(-1);
-
-  let list = undefined;
-  if (lessons) {
-    list = lessons.edges.map((edge: Edge<Lesson>, i: number) => {
-      return (
-        <ListItem
-          data-cy={`lesson-${i}`}
-          key={i}
-          onClick={() => {
-            launchLesson(edge.node.lessonId);
-          }}
-        >
-          <Card
-            data-cy={`image-${i}`}
-            className={classes.card}
-            style={{ backgroundImage: `url(${edge.node.image})` }}
-            onMouseOver={() => onMouseOver(i)}
-            onMouseOut={() => onMouseOut()}
-            elevation={hover === i ? 10 : 1}
-          >
-            <h2 className={classes.text}>{edge.node.name}</h2>
-          </Card>
-        </ListItem>
-      );
-    });
-  }
-
-  return (
-    <div className={classes.root}>
-      <h2 className={classes.header}>Latest Lessons</h2>
-      <List data-cy="lessons" className={classes.list}>
-        {list}
-      </List>
-    </div>
-  );
-};
 
 export default LatestLessons;

@@ -5,14 +5,17 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "tss-react/mui";
 
 import Banner from "components/banner";
 import LatestLessons from "components/latest-lessons";
 import Header from "components/header";
 import Footer from "components/footer";
 
-const useStyles = makeStyles(() => ({
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { getClientID } from "config";
+
+const useStyles = makeStyles({ name: { IndexPage } })(() => ({
   root: {
     height: "100%",
     display: "flex",
@@ -24,11 +27,29 @@ const useStyles = makeStyles(() => ({
 }));
 
 function IndexPage(): JSX.Element {
-  const classes = useStyles();
+  const { classes } = useStyles();
+  const [googleClientId, setClientId] = React.useState<string>("");
+
+  React.useEffect(() => {
+    let mounted = true;
+    getClientID()
+      .then((id: string) => {
+        if (!mounted) {
+          return;
+        }
+        setClientId(id);
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className={classes.root}>
-      <Header />
+      <GoogleOAuthProvider clientId={googleClientId || "test"}>
+        <Header googleClientId={googleClientId} />
+      </GoogleOAuthProvider>
       <Banner />
       <LatestLessons />
       <Footer />

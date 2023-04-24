@@ -5,7 +5,6 @@ module.exports = {
     description: ``,
   },
   plugins: [
-    `gatsby-plugin-typescript`,
     {
       resolve: `gatsby-plugin-env-variables`,
       options: {
@@ -19,7 +18,7 @@ module.exports = {
       },
     },
     {
-      resolve: "gatsby-plugin-material-ui",
+      resolve: "@iostindex/gatsby-plugin-material-ui",
     },
     {
       resolve: "gatsby-plugin-eslint",
