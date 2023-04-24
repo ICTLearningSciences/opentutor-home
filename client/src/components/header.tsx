@@ -12,41 +12,15 @@ import {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from "react-google-login";
-import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AccountCircle from "@material-ui/icons/AccountCircle";
+import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
+import AccountCircle from "@mui/icons-material/AccountCircle";
 import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, loginGoogle, login } from "api";
 import { getClientID } from "config";
 import { UserAccessToken } from "types";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    flexGrow: 1,
-  },
-  logoButton: {
-    marginRight: theme.spacing(2),
-    width: 200,
-    height: 50,
-  },
-  loginButton: {
-    height: 40,
-    width: 40,
-  },
-  links: {
-    position: "absolute",
-    right: theme.spacing(1),
-  },
-  link: {
-    color: "white",
-    "&:hover": {
-      color: "purple",
-    },
-  },
-}));
-
 const Header = (): JSX.Element => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [googleClientId, setClientId] = React.useState<string>("");
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [username, setUsername] = React.useState<string>();
@@ -183,5 +157,31 @@ const Header = (): JSX.Element => {
     </div>
   );
 };
+
+const useStyles = makeStyles({ name: { Header } })((theme) => ({
+  root: {
+    width: "100%",
+    flexGrow: 1,
+  },
+  logoButton: {
+    marginRight: theme.spacing(2),
+    width: 200,
+    height: 50,
+  },
+  loginButton: {
+    height: 40,
+    width: 40,
+  },
+  links: {
+    position: "absolute",
+    right: theme.spacing(1),
+  },
+  link: {
+    color: "white",
+    "&:hover": {
+      color: "purple",
+    },
+  },
+}));
 
 export default Header;

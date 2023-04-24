@@ -5,55 +5,14 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import { List, Card, ListItem } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { List, Card, ListItem } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 import { fetchLessons, TUTOR_ENDPOINT } from "api";
 import { Connection, Edge, Lesson } from "types";
 
-const useStyles = makeStyles(() => ({
-  root: {
-    height: "100%",
-    width: "100%",
-    flexGrow: 2,
-    padding: 25,
-  },
-  header: {
-    textDecoration: "underline",
-    textDecorationColor: "#ef3d56",
-  },
-  list: {
-    display: "flex",
-    flexDirection: "row",
-    overflow: "auto",
-    whiteSpace: "nowrap",
-    padding: 10,
-  },
-  card: {
-    display: "flex",
-    width: 300,
-    height: 200,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    objectFit: "cover",
-  },
-  text: {
-    padding: 2,
-    color: "white",
-    textShadow: "2px 2px 3px #444",
-    backgroundColor: "rgba(0, 0, 0, .2)",
-    boxShadow: "0 0 5rem rgba(0, 0, 0, .5)",
-  },
-}));
 
 export const LatestLessons = (): JSX.Element => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();
   const [hover, setHover] = React.useState(-1);
 
@@ -116,5 +75,46 @@ export const LatestLessons = (): JSX.Element => {
     </div>
   );
 };
+const useStyles = makeStyles({ name: { LatestLessons } })(() => ({
+  root: {
+    height: "100%",
+    width: "100%",
+    flexGrow: 2,
+    padding: 25,
+  },
+  header: {
+    textDecoration: "underline",
+    textDecorationColor: "#ef3d56",
+  },
+  list: {
+    display: "flex",
+    flexDirection: "row",
+    overflow: "auto",
+    whiteSpace: "nowrap",
+    padding: 10,
+  },
+  card: {
+    display: "flex",
+    width: 300,
+    height: 200,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    objectFit: "cover",
+  },
+  text: {
+    padding: 2,
+    color: "white",
+    textShadow: "2px 2px 3px #444",
+    backgroundColor: "rgba(0, 0, 0, .2)",
+    boxShadow: "0 0 5rem rgba(0, 0, 0, .5)",
+  },
+}));
 
 export default LatestLessons;
