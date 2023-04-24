@@ -10,7 +10,6 @@ import { makeStyles } from "tss-react/mui";
 import { fetchLessons, TUTOR_ENDPOINT } from "api";
 import { Connection, Edge, Lesson } from "types";
 
-
 export const LatestLessons = (): JSX.Element => {
   const { classes } = useStyles();
   const [lessons, setLessons] = React.useState<Connection<Lesson>>();

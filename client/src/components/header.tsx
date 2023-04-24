@@ -7,38 +7,18 @@ The full terms of this copyright and license should always be found in the root 
 import React from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "gatsby";
-import {
-  GoogleLogin,
-  GoogleLoginResponse,
-  GoogleLoginResponseOffline,
-} from "react-google-login";
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, loginGoogle, login } from "api";
-import { getClientID } from "config";
 import { UserAccessToken } from "types";
+import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
 
-const Header = (): JSX.Element => {
+const Header = (props: { googleClientId: string }): JSX.Element => {
+  const { googleClientId } = props;
   const { classes } = useStyles();
-  const [googleClientId, setClientId] = React.useState<string>("");
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [username, setUsername] = React.useState<string>();
-
-  React.useEffect(() => {
-    let mounted = true;
-    getClientID()
-      .then((id: string) => {
-        if (!mounted) {
-          return;
-        }
-        setClientId(id);
-      })
-      .catch((err) => console.error(err));
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   React.useEffect(() => {
     let mounted = true;
@@ -60,26 +40,26 @@ const Header = (): JSX.Element => {
     };
   }, [cookies]);
 
-  const onLoginSuccess = (
-    response: GoogleLoginResponse | GoogleLoginResponseOffline
-  ): void => {
-    if ((response as GoogleLoginResponseOffline).code !== undefined) {
-      return;
-    }
-    const loginResponse = response as GoogleLoginResponse;
-    loginGoogle(loginResponse.accessToken).then((token: UserAccessToken) => {
+  const googleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      onGoogleLoginSuccess(tokenResponse.access_token);
+    },
+    onError: (failRes) => {
+      onGoogleLoginFailed(failRes);
+    },
+  });
+
+  const onGoogleLoginSuccess = (accessToken: string): void => {
+    loginGoogle(accessToken).then((token: UserAccessToken) => {
       setCookie("accessToken", token.accessToken, { path: "/" });
       window.location.href = ADMIN_ENDPOINT;
     });
   };
 
-  const onLoginFailed = (response: {
-    error: string;
-    details: string;
-  }): void => {
-    console.error(
-      `login failed with error ${response.error}: ${response.details}`
-    );
+  const onGoogleLoginFailed = (
+    res: Pick<TokenResponse, "error" | "error_description" | "error_uri">
+  ): void => {
+    console.error("login failed with error", JSON.stringify(res));
   };
 
   const onLogout = (): void => {
@@ -110,23 +90,15 @@ const Header = (): JSX.Element => {
         {username}
       </Button>
     ) : (
-      <GoogleLogin
-        clientId={googleClientId}
-        isSignedIn={cookies.accessToken}
-        onSuccess={onLoginSuccess}
-        onFailure={onLoginFailed}
-        cookiePolicy={"single_host_origin"}
-        render={(renderProps) => (
-          <Button
-            data-cy="login"
-            style={{ color: "white" }}
-            onClick={renderProps.onClick}
-            disabled={renderProps.disabled}
-          >
-            Login
-          </Button>
-        )}
-      />
+      // Note: old login style had cookiePolicy={"single_host_origin"}, not sure if this is handled with new library
+      <Button
+        variant="contained"
+        onClick={() => googleLogin()}
+        style={{ color: "white" }}
+        data-cy="login"
+      >
+        Login
+      </Button>
     );
   }
 

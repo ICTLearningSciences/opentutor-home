@@ -1,5 +1,9 @@
 import React from "react";
-import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider,
+} from "@mui/material/styles";
 import { CookiesProvider } from "react-cookie";
 
 import "css/style.css";

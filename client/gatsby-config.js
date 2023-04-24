@@ -18,7 +18,7 @@ module.exports = {
       },
     },
     {
-      resolve: "gatsby-plugin-material-ui",
+      resolve: "@iostindex/gatsby-plugin-material-ui",
     },
     {
       resolve: "gatsby-plugin-eslint",

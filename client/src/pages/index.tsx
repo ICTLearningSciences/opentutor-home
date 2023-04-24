@@ -12,6 +12,9 @@ import LatestLessons from "components/latest-lessons";
 import Header from "components/header";
 import Footer from "components/footer";
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { getClientID } from "config";
+
 const useStyles = makeStyles({ name: { IndexPage } })(() => ({
   root: {
     height: "100%",
@@ -25,10 +28,28 @@ const useStyles = makeStyles({ name: { IndexPage } })(() => ({
 
 function IndexPage(): JSX.Element {
   const { classes } = useStyles();
+  const [googleClientId, setClientId] = React.useState<string>("test");
+
+  React.useEffect(() => {
+    let mounted = true;
+    getClientID()
+      .then((id: string) => {
+        if (!mounted) {
+          return;
+        }
+        setClientId(id);
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className={classes.root}>
-      <Header />
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <Header googleClientId={googleClientId} />
+      </GoogleOAuthProvider>
       <Banner />
       <LatestLessons />
       <Footer />
