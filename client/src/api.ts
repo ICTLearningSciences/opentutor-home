@@ -6,10 +6,10 @@ The full terms of this copyright and license should always be found in the root 
 */
 import axios from "axios";
 import { AppConfig } from "config";
+import { convertLessonsGql } from "gql-api-helpers";
 import {
   Lesson,
-  FetchLessons,
-  Connection,
+  GqlFetchLessons,
   Login,
   LoginGoogle,
   UserAccessToken,
@@ -59,8 +59,8 @@ export async function fetchAppConfig(): Promise<AppConfig> {
   return result.appConfig;
 }
 
-export async function fetchLessons(): Promise<Connection<Lesson>> {
-  const result = await fetchGql<FetchLessons>({
+export async function fetchLessons(): Promise<Lesson[]> {
+  const result = await fetchGql<GqlFetchLessons>({
     query: `
       query Lessons($filter: String!){
         lessons(
@@ -71,7 +71,14 @@ export async function fetchLessons(): Promise<Connection<Lesson>> {
           edges {
             node {
               lessonId
-              image
+              media{
+                type
+                url
+                props{
+                  name
+                  value
+                }
+              }
               name
             }
           }
@@ -82,7 +89,7 @@ export async function fetchLessons(): Promise<Connection<Lesson>> {
       filter: JSON.stringify({ image: { $nin: [null, ""] } }),
     },
   });
-  return result.lessons;
+  return convertLessonsGql(result.lessons.edges.map((edge) => edge.node));
 }
 
 export async function loginGoogle(

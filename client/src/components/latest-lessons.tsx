@@ -8,11 +8,11 @@ import React from "react";
 import { List, Card, ListItem } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { fetchLessons, TUTOR_ENDPOINT } from "api";
-import { Connection, Edge, Lesson } from "types";
+import { Lesson } from "types";
 
 export const LatestLessons = (): JSX.Element => {
   const { classes } = useStyles();
-  const [lessons, setLessons] = React.useState<Connection<Lesson>>();
+  const [lessons, setLessons] = React.useState<Lesson[]>();
   const [hover, setHover] = React.useState(-1);
 
   React.useEffect(() => {
@@ -41,24 +41,24 @@ export const LatestLessons = (): JSX.Element => {
 
   let list = undefined;
   if (lessons) {
-    list = lessons.edges.map((edge: Edge<Lesson>, i: number) => {
+    list = lessons.map((lesson: Lesson, i: number) => {
       return (
         <ListItem
           data-cy={`lesson-${i}`}
           key={i}
           onClick={() => {
-            launchLesson(edge.node.lessonId);
+            launchLesson(lesson.lessonId);
           }}
         >
           <Card
             data-cy={`image-${i}`}
             className={classes.card}
-            style={{ backgroundImage: `url(${edge.node.image})` }}
+            style={{ backgroundImage: `url(${lesson.image})` }}
             onMouseOver={() => onMouseOver(i)}
             onMouseOut={() => onMouseOut()}
             elevation={hover === i ? 10 : 1}
           >
-            <h2 className={classes.text}>{edge.node.name}</h2>
+            <h2 className={classes.text}>{lesson.name}</h2>
           </Card>
         </ListItem>
       );
