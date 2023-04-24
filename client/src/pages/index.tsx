@@ -28,7 +28,7 @@ const useStyles = makeStyles({ name: { IndexPage } })(() => ({
 
 function IndexPage(): JSX.Element {
   const { classes } = useStyles();
-  const [googleClientId, setClientId] = React.useState<string>("test");
+  const [googleClientId, setClientId] = React.useState<string>("");
 
   React.useEffect(() => {
     let mounted = true;
@@ -47,7 +47,7 @@ function IndexPage(): JSX.Element {
 
   return (
     <div className={classes.root}>
-      <GoogleOAuthProvider clientId={googleClientId}>
+      <GoogleOAuthProvider clientId={googleClientId || "test"}>
         <Header googleClientId={googleClientId} />
       </GoogleOAuthProvider>
       <Banner />
