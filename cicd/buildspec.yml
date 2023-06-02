@@ -1,5 +1,11 @@
 version: 0.2
 
+env:
+  variables:
+    GRAPHQL_ENDPOINT: 'https://api-dev.opentutor.info/graphql/graphql'
+    ADMIN_ENDPOINT: 'https://dev.opentutor.info/admin'
+    TUTOR_ENDPOINT: 'https://dev.opentutor.info/tutor'
+
 phases:
   install:
     runtime-versions:

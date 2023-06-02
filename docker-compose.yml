@@ -12,4 +12,8 @@ services:
     build:
       context: cypress
     environment:
-      - "CYPRESS_BASE_URL=http://opentutor"
+      - CYPRESS_BASE_URL=http://opentutor
+      - CYPRESS_SNAPSHOT_DIFF_DIR=/app/cypress/snapshots/snapshot_failed_diffs
+      - GRAPHQL_ENDPOINT=/graphql
+      - TUTOR_ENDPOINT=/tutor
+      - ADMIN_ENDPOINT=/admin

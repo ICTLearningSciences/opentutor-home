@@ -4,14 +4,18 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GqlLesson, Lesson } from "types";
+import { configureStore } from "@reduxjs/toolkit";
+import configReducer from "./slices/config";
+import lessonsReducer from "./slices/lessons";
 
-export function convertLessonsGql(gqlLessons: GqlLesson[]): Lesson[] {
-  return gqlLessons.map((lesson) => {
-    return {
-      ...lesson,
-      image:
-        lesson.media && lesson.media.type === "image" ? lesson.media.url : "",
-    };
-  });
-}
+export const store = configureStore({
+  reducer: {
+    config: configReducer,
+    lessons: lessonsReducer,
+  },
+});
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;

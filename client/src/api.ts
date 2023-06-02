@@ -5,13 +5,12 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios from "axios";
-import { AppConfig } from "config";
 import { convertLessonsGql } from "gql-api-helpers";
 import {
+  AppConfig,
+  Connection,
+  GqlLesson,
   Lesson,
-  GqlFetchLessons,
-  Login,
-  LoginGoogle,
   UserAccessToken,
 } from "types";
 
@@ -49,9 +48,12 @@ async function fetchGql<T>(
 export async function fetchAppConfig(): Promise<AppConfig> {
   const result = await fetchGql<{ appConfig: AppConfig }>({
     query: `
-      query FetchAppConfig{
+      query FetchAppConfig {
         appConfig {
           googleClientId
+          logoIcon
+          logoLargeIcon
+          featuredLessons
         }
       }
     `,
@@ -60,26 +62,26 @@ export async function fetchAppConfig(): Promise<AppConfig> {
 }
 
 export async function fetchLessons(): Promise<Lesson[]> {
-  const result = await fetchGql<GqlFetchLessons>({
+  const result = await fetchGql<{ lessons: Connection<GqlLesson> }>({
     query: `
-      query Lessons($filter: String!){
+      query Lessons($filter: String!) {
         lessons(
           filter: $filter,
-          sortBy:"updatedAt",
-          limit:5,
+          sortBy: "updatedAt",
+          limit: 5,
         ) {
           edges {
             node {
               lessonId
-              media{
+              name
+              media {
                 type
                 url
-                props{
+                props {
                   name
                   value
                 }
               }
-              name
             }
           }
         }
@@ -95,7 +97,7 @@ export async function fetchLessons(): Promise<Lesson[]> {
 export async function loginGoogle(
   accessToken: string
 ): Promise<UserAccessToken> {
-  const result = await fetchGql<LoginGoogle>({
+  const result = await fetchGql<{ loginGoogle: UserAccessToken }>({
     query: `
       mutation LoginGoogle($accessToken: String!) {
         loginGoogle(accessToken: $accessToken) {
@@ -115,7 +117,7 @@ export async function loginGoogle(
 }
 
 export async function login(accessToken: string): Promise<UserAccessToken> {
-  const result = await fetchGql<Login>({
+  const result = await fetchGql<{ login: UserAccessToken }>({
     query: `
       mutation Login($accessToken: String!) {
         login(accessToken: $accessToken) {

@@ -4,10 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-declare namespace Cypress {
-  interface Chainable<Subject = any> {
-    matchImageSnapshot(value: string): Chainable<void>;
-    fill(value: string): Chainable<void>;
-  }
-  interface cy extends Chainable<undefined> {}
-}
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "./store";
+
+// Use throughout your app instead of plain `useDispatch` and `useSelector`
+export const useAppDispatch = (): AppDispatch => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

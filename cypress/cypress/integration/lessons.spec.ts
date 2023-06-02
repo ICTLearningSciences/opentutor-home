@@ -37,6 +37,7 @@ describe("Latest Lessons", () => {
     cySetup(cy);
     cyMockDefault(cy, { gqlQueries: [cyMockLessons()] });
     cy.visit("/");
+    cy.wait("@graphql");
     cy.get("[data-cy=lessons]").children().should("have.length", 2);
     cy.get("[data-cy=lesson-0]").contains("lesson 1");
     cy.get("[data-cy=lesson-1]").contains("lesson 2");
@@ -46,6 +47,7 @@ describe("Latest Lessons", () => {
     cySetup(cy);
     cyMockDefault(cy, { gqlQueries: [cyMockLessons()] });
     cy.visit("/");
+    cy.wait("@graphql");
     cy.get("[data-cy=lesson-0]").click();
     cy.location("pathname").should("contain", "/tutor");
     cy.location("search").should("contain", "lesson=lesson1");

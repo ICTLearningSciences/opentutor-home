@@ -57,6 +57,7 @@ export interface MockGraphQLQuery {
 }
 
 export function cySetup(cy) {
+  cy.server();
   cy.viewport(1280, 720);
 }
 
@@ -65,7 +66,7 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
   for (const mock of mocks) {
     queryCalls[mock.query] = 0;
   }
-  cy.intercept("**/graphql", (req) => {
+  cy.intercept("/graphql", (req) => {
     const { body } = req;
     const queryBody = body.query.replace(/\s+/g, " ").replace("\n", "").trim();
     let handled = false;
@@ -74,9 +75,9 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
         queryBody.match(new RegExp(`^(mutation|query) ${mock.query}[{(\\s]`))
       ) {
         const data = Array.isArray(mock.data) ? mock.data : [mock.data];
-        const val = data[Math.min(queryCalls[mock.query], data.length - 1)];
-        let body = val;
-
+        const bodyContent =
+          data[Math.min(queryCalls[mock.query], data.length - 1)];
+        let body = bodyContent;
         req.alias = mock.query;
         req.reply(
           staticResponse({
@@ -95,7 +96,7 @@ export function cyInterceptGraphQL(cy, mocks: MockGraphQLQuery[]): void {
       console.error(`failed to handle query for...`);
       console.error(req);
     }
-  });
+  }).as("graphql");
 }
 
 export function mockGQL(query: string, data: any | any[]): MockGraphQLQuery {

@@ -4,20 +4,37 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { fetchAppConfig } from "api";
+import { useEffect } from "react";
+import { useAppSelector, useAppDispatch } from "store/hooks";
+import { AppConfig, LoadStatus } from "types";
+import { getConfig } from ".";
 
-export interface AppConfig {
-  googleClientId: string;
+interface UseWithConfig {
+  config: AppConfig | undefined;
+  isConfigLoaded: boolean;
+  loadConfig: () => void;
 }
 
-export async function getClientID(): Promise<string> {
-  if (process.env.GOOGLE_CLIENT_ID) {
-    return process.env.GOOGLE_CLIENT_ID;
+export function useWithConfig(): UseWithConfig {
+  const dispatch = useAppDispatch();
+  const state = useAppSelector((state) => state.config);
+
+  useEffect(() => {
+    loadConfig();
+  }, []);
+
+  function loadConfig() {
+    if (
+      state.status === LoadStatus.NONE ||
+      state.status === LoadStatus.FAILED
+    ) {
+      dispatch(getConfig());
+    }
   }
-  try {
-    return (await fetchAppConfig()).googleClientId;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
+
+  return {
+    config: state.config,
+    isConfigLoaded: state.status === LoadStatus.SUCCEEDED,
+    loadConfig,
+  };
 }

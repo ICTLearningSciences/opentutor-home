@@ -4,43 +4,40 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React from "react";
-import { Link } from "gatsby";
-import { AppBar, Toolbar } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
-import { ADMIN_ENDPOINT, TUTOR_ENDPOINT } from "api";
+import { useEffect } from "react";
+import { useAppSelector, useAppDispatch } from "store/hooks";
+import { Lesson, LoadStatus } from "types";
+import { getLessons } from ".";
 
-const useStyles = makeStyles({ name: { Footer } })(() => ({
-  root: {
-    width: "100%",
-    alignItems: "center",
-    flexGrow: 1,
-  },
-  link: {
-    marginRight: 10,
-    marginLeft: 10,
-    color: "white",
-    "&:hover": {
-      color: "purple",
-    },
-  },
-}));
-
-function Footer(): JSX.Element {
-  const { classes } = useStyles();
-
-  return (
-    <AppBar className={classes.root} position="static">
-      <Toolbar>
-        <Link className={classes.link} to={ADMIN_ENDPOINT}>
-          Admin
-        </Link>
-        <Link className={classes.link} to={TUTOR_ENDPOINT}>
-          Tutor
-        </Link>
-      </Toolbar>
-    </AppBar>
-  );
+interface UseWithLessons {
+  lessons: Lesson[];
+  loadStatus: LoadStatus;
+  isLessonsLoaded: boolean;
+  loadLessons: () => void;
 }
 
-export default Footer;
+export function useWithLessons(): UseWithLessons {
+  const dispatch = useAppDispatch();
+  const state = useAppSelector((state) => state.lessons);
+  // const config = useAppSelector((state) => state.config.config);
+
+  useEffect(() => {
+    getLessons();
+  }, []);
+
+  function loadLessons() {
+    if (
+      state.status === LoadStatus.NONE ||
+      state.status === LoadStatus.FAILED
+    ) {
+      dispatch(getLessons());
+    }
+  }
+
+  return {
+    lessons: state.lessons,
+    loadStatus: state.status,
+    isLessonsLoaded: state.status === LoadStatus.SUCCEEDED,
+    loadLessons,
+  };
+}
