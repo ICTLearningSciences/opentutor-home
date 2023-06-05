@@ -61,7 +61,12 @@ export async function fetchAppConfig(): Promise<AppConfig> {
   return result.appConfig;
 }
 
-export async function fetchLessons(): Promise<Lesson[]> {
+export async function fetchLessons(config?: AppConfig): Promise<Lesson[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let filter: any = { media: { $nin: [null, ""] } };
+  if (config && config.featuredLessons?.length > 0) {
+    filter = { ...filter, lessonId: { $in: config.featuredLessons } };
+  }
   const result = await fetchGql<{ lessons: Connection<GqlLesson> }>({
     query: `
       query Lessons($filter: String!) {
@@ -88,7 +93,7 @@ export async function fetchLessons(): Promise<Lesson[]> {
       }
     `,
     variables: {
-      filter: JSON.stringify({ image: { $nin: [null, ""] } }),
+      filter: JSON.stringify(filter),
     },
   });
   return convertLessonsGql(result.lessons.edges.map((edge) => edge.node));

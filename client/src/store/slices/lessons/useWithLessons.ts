@@ -6,8 +6,9 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "store/hooks";
-import { Lesson, LoadStatus } from "types";
+import { AppConfig, Lesson, LoadStatus } from "types";
 import { getLessons } from ".";
+import { useWithConfig } from "../config/useWithConfig";
 
 interface UseWithLessons {
   lessons: Lesson[];
@@ -18,19 +19,24 @@ interface UseWithLessons {
 
 export function useWithLessons(): UseWithLessons {
   const dispatch = useAppDispatch();
+  const { config, loadConfig } = useWithConfig();
   const state = useAppSelector((state) => state.lessons);
-  // const config = useAppSelector((state) => state.config.config);
 
   useEffect(() => {
-    getLessons();
+    loadConfig();
   }, []);
 
-  function loadLessons() {
+  useEffect(() => {
+    if (!config) return;
+    loadLessons(config);
+  }, [config]);
+
+  function loadLessons(config?: AppConfig) {
     if (
       state.status === LoadStatus.NONE ||
       state.status === LoadStatus.FAILED
     ) {
-      dispatch(getLessons());
+      dispatch(getLessons(config));
     }
   }
 

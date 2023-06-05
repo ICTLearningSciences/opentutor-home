@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchLessons } from "../../../api";
-import { Lesson, LoadStatus } from "../../../types";
+import { AppConfig, Lesson, LoadStatus } from "../../../types";
 
 export interface LessonsState {
   lessons: Lesson[];
@@ -18,9 +18,12 @@ const initialState: LessonsState = {
   status: LoadStatus.NONE,
 };
 
-export const getLessons = createAsyncThunk("lessons/lessons", async () => {
-  return await fetchLessons();
-});
+export const getLessons = createAsyncThunk(
+  "lessons/lessons",
+  async (config?: AppConfig) => {
+    return await fetchLessons(config);
+  }
+);
 
 export const lessonsSlice = createSlice({
   name: "lessons",

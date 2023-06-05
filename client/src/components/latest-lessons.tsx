@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React, { useEffect } from "react";
+import React from "react";
 import { List, Card, ListItem, CircularProgress } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { TUTOR_ENDPOINT } from "api";
@@ -15,7 +15,7 @@ import defaultIcon from "static/ColoredLogo3.png";
 
 export const LatestLessons = (): JSX.Element => {
   const { classes } = useStyles();
-  const { loadStatus, lessons, loadLessons } = useWithLessons();
+  const { loadStatus, lessons } = useWithLessons();
   const [hover, setHover] = React.useState(-1);
   const logo = useAppSelector((state) => state.config.config?.logoLargeIcon);
 
@@ -25,10 +25,6 @@ export const LatestLessons = (): JSX.Element => {
   }
   const onMouseOver = (i: number): void => setHover(i);
   const onMouseOut = (): void => setHover(-1);
-
-  useEffect(() => {
-    loadLessons();
-  }, []);
 
   if (loadStatus === LoadStatus.IN_PROGRESS) {
     return (
