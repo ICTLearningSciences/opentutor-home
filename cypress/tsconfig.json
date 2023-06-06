@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node", "cypress-localstorage-commands"]
+    "types": ["cypress", "node"]
   },
-  "include": ["**/*.ts", "plugins/index.ts"]
+  "include": ["**/*.ts"]
 }

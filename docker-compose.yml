@@ -1,19 +1,28 @@
 version: '3.8'
 services:
-  opentutor:
-    container_name: opentutor
+  home:
+    image: apache
     build:
       context: .
       dockerfile: ./docker/Dockerfile
-  cypress:
+    container_name: apache
+    restart: always
+    ports:
+      - "8000:80"
+  e2e:
+    image: cypress
+    build:
+      context: ./cypress
     container_name: cypress
     depends_on:
-      - opentutor
-    build:
-      context: cypress
+      - home
     environment:
-      - CYPRESS_BASE_URL=http://opentutor
-      - CYPRESS_SNAPSHOT_DIFF_DIR=/app/cypress/snapshots/snapshot_failed_diffs
+      - CYPRESS_baseUrl=http://home
+      - CYPRESS_BASE_URL=http://home
       - GRAPHQL_ENDPOINT=/graphql
       - TUTOR_ENDPOINT=/tutor
       - ADMIN_ENDPOINT=/admin
+    command: npx cypress run
+    volumes:
+      - ./cypress/cypress:/app/cypress
+      - ./cypress/cypress.config.ts:/app/cypress.config.ts

@@ -5,27 +5,22 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 // ***********************************************************
-// This example plugins/index.js can be used to load plugins
+// This example support/e2e.ts is processed and
+// loaded automatically before your test files.
 //
-// You can change the location of this file or turn off loading
-// the plugins file with the 'pluginsFile' configuration option.
+// This is a great place to put global configuration and
+// behavior that modifies Cypress.
+//
+// You can change the location of this file or turn off
+// automatically serving support files with the
+// 'supportFile' configuration option.
 //
 // You can read more here:
-// https://on.cypress.io/plugins-guide
+// https://on.cypress.io/configuration
 // ***********************************************************
 
-// This function is called when a project is opened or re-opened (e.g. due to
-// the project's config changing)
+// Import commands.js using ES2015 syntax:
+import "./commands";
 
-/// <reference types="cypress" />
-
-/**
- * @type {Cypress.PluginConfig}
- */
-const {
-  addMatchImageSnapshotPlugin,
-} = require("cypress-image-snapshot/plugin");
-
-module.exports = (on, config) => {
-  addMatchImageSnapshotPlugin(on, config);
-};
+// Alternatively you can use CommonJS syntax:
+// require('./commands')

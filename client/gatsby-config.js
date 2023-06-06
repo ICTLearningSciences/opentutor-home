@@ -1,5 +1,5 @@
 module.exports = {
-  pathPrefix: `/home`,
+  pathPrefix: `/`,
   siteMetadata: {
     title: `OpenTutor Home`,
     description: ``,

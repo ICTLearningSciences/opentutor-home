@@ -14,7 +14,8 @@ import {
   UserAccessToken,
 } from "types";
 
-export const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || "/graphql";
+export const GRAPHQL_ENDPOINT =
+  process.env.GRAPHQL_ENDPOINT || "/graphql/graphql";
 export const TUTOR_ENDPOINT = process.env.TUTOR_ENDPOINT || "/tutor";
 export const ADMIN_ENDPOINT = process.env.ADMIN_ENDPOINT || "/admin";
 
