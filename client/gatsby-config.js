@@ -1,5 +1,5 @@
 module.exports = {
-  pathPrefix: `/`,
+  pathPrefix: `/home`,
   siteMetadata: {
     title: `OpenTutor Home`,
     description: ``,
@@ -8,6 +8,9 @@ module.exports = {
   plugins: [
     `gatsby-plugin-sitemap`,
     `gatsby-plugin-typescript`,
+    {
+      resolve: "@iostindex/gatsby-plugin-material-ui",
+    },
     {
       resolve: `gatsby-plugin-env-variables`,
       options: {

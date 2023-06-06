@@ -17,8 +17,7 @@ services:
     depends_on:
       - home
     environment:
-      - CYPRESS_baseUrl=http://home
-      - CYPRESS_BASE_URL=http://home
+      - CYPRESS_BASE_URL=http://home/home
       - GRAPHQL_ENDPOINT=/graphql
       - TUTOR_ENDPOINT=/tutor
       - ADMIN_ENDPOINT=/admin
