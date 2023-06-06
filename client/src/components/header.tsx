@@ -4,23 +4,29 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React from "react";
+import React, { useEffect } from "react";
 import { useCookies } from "react-cookie";
+import { makeStyles } from "tss-react/mui";
 import { Link } from "gatsby";
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { ADMIN_ENDPOINT, TUTOR_ENDPOINT, loginGoogle, login } from "api";
-import { UserAccessToken } from "types";
 import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
+import defaultIcon from "static/FavLogo3.png";
 
-const Header = (props: { googleClientId: string }): JSX.Element => {
-  const { googleClientId } = props;
+import { ADMIN_ENDPOINT, loginGoogle, login } from "api";
+import { UserAccessToken } from "types";
+import { useAppSelector } from "store/hooks";
+
+const Header = (): JSX.Element => {
   const { classes } = useStyles();
+  const logo = useAppSelector((state) => state.config.config?.logoIcon);
+  const googleClientId = useAppSelector(
+    (state) => state.config.config?.googleClientId
+  );
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const [username, setUsername] = React.useState<string>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     let mounted = true;
     if (cookies.accessToken && !username) {
       login(cookies.accessToken).then((token: UserAccessToken) => {
@@ -70,7 +76,7 @@ const Header = (props: { googleClientId: string }): JSX.Element => {
   function LoginButton(): JSX.Element {
     if (!googleClientId) {
       return (
-        <Button data-cy="login" style={{ color: "white" }} disabled={true}>
+        <Button className={classes.link} data-cy="login" disabled={true}>
           Login
         </Button>
       );
@@ -92,9 +98,8 @@ const Header = (props: { googleClientId: string }): JSX.Element => {
     ) : (
       // Note: old login style had cookiePolicy={"single_host_origin"}, not sure if this is handled with new library
       <Button
-        variant="contained"
+        className={classes.link}
         onClick={() => googleLogin()}
-        style={{ color: "white" }}
         data-cy="login"
       >
         Login
@@ -103,50 +108,51 @@ const Header = (props: { googleClientId: string }): JSX.Element => {
   }
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
+    <AppBar position="static">
+      <Toolbar
+        style={{
+          height: 70,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src={logo || defaultIcon}
+            style={{
+              height: "auto",
+              width: "auto",
+              maxHeight: 70,
+              marginTop: 10,
+              marginBottom: 10,
+              marginRight: 10,
+              padding: 5,
+            }}
+          />
           <Typography variant="h5">OpenTutor</Typography>
-          <div className={classes.links}>
-            <Button
-              className={classes.link}
-              component={Link}
-              to={ADMIN_ENDPOINT}
-            >
-              Admin
-            </Button>
-            <Button
-              className={classes.link}
-              component={Link}
-              to={TUTOR_ENDPOINT}
-            >
-              Tutor
-            </Button>
-            {LoginButton()}
-          </div>
-        </Toolbar>
-      </AppBar>
-    </div>
+        </div>
+        <div>
+          <Button className={classes.link} component={Link} to={ADMIN_ENDPOINT}>
+            Admin
+          </Button>
+          {LoginButton()}
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 };
 
-const useStyles = makeStyles({ name: { Header } })((theme) => ({
-  root: {
-    width: "100%",
-    flexGrow: 1,
-  },
-  logoButton: {
-    marginRight: theme.spacing(2),
-    width: 200,
-    height: 50,
-  },
+const useStyles = makeStyles({ name: { Header } })(() => ({
   loginButton: {
     height: 40,
     width: 40,
-  },
-  links: {
-    position: "absolute",
-    right: theme.spacing(1),
   },
   link: {
     color: "white",

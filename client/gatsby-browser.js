@@ -5,6 +5,8 @@ import {
   StyledEngineProvider,
 } from "@mui/material/styles";
 import { CookiesProvider } from "react-cookie";
+import { Provider } from "react-redux";
+import { store } from "store/store";
 
 import "css/style.css";
 
@@ -19,7 +21,9 @@ const theme = createTheme({
 export const wrapRootElement = ({ element }) => (
   <StyledEngineProvider injectFirst>
     <ThemeProvider theme={theme}>
-      <CookiesProvider>{element}</CookiesProvider>
+      <Provider store={store}>
+        <CookiesProvider> {element} </CookiesProvider>
+      </Provider>
     </ThemeProvider>
   </StyledEngineProvider>
 );

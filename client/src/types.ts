@@ -4,8 +4,18 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ActionType = any;
+
+export enum LoadStatus {
+  NONE = 0,
+  IN_PROGRESS = 1,
+  SUCCEEDED = 2,
+  FAILED = 3,
+}
+
+export interface Connection<T> {
+  edges: Edge<T>[];
+  pageInfo: PageInfo;
+}
 
 export interface Edge<T> {
   cursor: string;
@@ -19,20 +29,10 @@ export interface PageInfo {
   endCursor: string;
 }
 
-export interface Connection<T> {
-  edges: Edge<T>[];
-  pageInfo: PageInfo;
-}
-
-export interface MediaProps {
+export interface Lesson {
+  lessonId: string;
   name: string;
-  value?: string;
-}
-
-export interface Media {
-  url: string;
-  type: string;
-  props?: MediaProps[];
+  image: string;
 }
 
 export interface GqlLesson {
@@ -41,10 +41,15 @@ export interface GqlLesson {
   media?: Media;
 }
 
-export interface Lesson {
-  lessonId: string;
+export interface Media {
+  url: string;
+  type: string;
+  props?: MediaProps[];
+}
+
+export interface MediaProps {
   name: string;
-  image: string;
+  value?: string;
 }
 
 export interface User {
@@ -59,14 +64,9 @@ export interface UserAccessToken {
   expirationDate: string;
 }
 
-export interface GqlFetchLessons {
-  lessons: Connection<GqlLesson>;
-}
-
-export interface Login {
-  login: UserAccessToken;
-}
-
-export interface LoginGoogle {
-  loginGoogle: UserAccessToken;
+export interface AppConfig {
+  googleClientId: string;
+  logoIcon: string;
+  logoLargeIcon: string;
+  featuredLessons: string[];
 }

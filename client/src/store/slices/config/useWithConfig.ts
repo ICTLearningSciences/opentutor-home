@@ -4,43 +4,37 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React from "react";
-import { Link } from "gatsby";
-import { AppBar, Toolbar } from "@mui/material";
-import { makeStyles } from "tss-react/mui";
-import { ADMIN_ENDPOINT, TUTOR_ENDPOINT } from "api";
+import { useEffect } from "react";
+import { useAppSelector, useAppDispatch } from "store/hooks";
+import { AppConfig, LoadStatus } from "types";
+import { getConfig } from ".";
 
-const useStyles = makeStyles({ name: { Footer } })(() => ({
-  root: {
-    width: "100%",
-    alignItems: "center",
-    flexGrow: 1,
-  },
-  link: {
-    marginRight: 10,
-    marginLeft: 10,
-    color: "white",
-    "&:hover": {
-      color: "purple",
-    },
-  },
-}));
-
-function Footer(): JSX.Element {
-  const { classes } = useStyles();
-
-  return (
-    <AppBar className={classes.root} position="static">
-      <Toolbar>
-        <Link className={classes.link} to={ADMIN_ENDPOINT}>
-          Admin
-        </Link>
-        <Link className={classes.link} to={TUTOR_ENDPOINT}>
-          Tutor
-        </Link>
-      </Toolbar>
-    </AppBar>
-  );
+interface UseWithConfig {
+  config: AppConfig | undefined;
+  isConfigLoaded: boolean;
+  loadConfig: () => void;
 }
 
-export default Footer;
+export function useWithConfig(): UseWithConfig {
+  const dispatch = useAppDispatch();
+  const state = useAppSelector((state) => state.config);
+
+  useEffect(() => {
+    loadConfig();
+  }, []);
+
+  function loadConfig() {
+    if (
+      state.status === LoadStatus.NONE ||
+      state.status === LoadStatus.FAILED
+    ) {
+      dispatch(getConfig());
+    }
+  }
+
+  return {
+    config: state.config,
+    isConfigLoaded: state.status === LoadStatus.SUCCEEDED,
+    loadConfig,
+  };
+}

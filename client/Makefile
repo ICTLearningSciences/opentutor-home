@@ -22,10 +22,6 @@ cypress-docker:
 		--workdir /client \
 	$(CYPRESS_IMAGE)
 
-.PHONY: cypress-update-snapshots
-cypress-update-snapshots:
-	CYPRESS_DOCKER_ENTRYPOINT=bin/cypress_update_snapshots.sh $(MAKE) cypress-docker
-
 .PHONY: dependencies-update
 dependencies-update:
 	npm run dependencies-update

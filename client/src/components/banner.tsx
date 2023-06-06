@@ -6,56 +6,48 @@ The full terms of this copyright and license should always be found in the root 
 */
 import React from "react";
 import Slider from "react-slick";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Card, CardContent, Typography, Button } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { ADMIN_ENDPOINT } from "api";
-import chatImg from "images/banners/chat.png";
-import editImg from "images/banners/edit.png";
-import gradeImg from "images/banners/grade.png";
-import trainImg from "images/banners/train.png";
+import chatImg from "static/chat.png";
+import editImg from "static/edit.png";
+import gradeImg from "static/grade.png";
+import trainImg from "static/train.png";
 
 const useStyles = makeStyles({ name: { Banner } })(() => ({
   root: {
     width: "100%",
     height: 300,
-    flexGrow: 1,
   },
   card: {
     display: "flex",
+    flexDirection: "column",
     height: 300,
     padding: 0,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
   },
   scrim: {
-    width: "100%",
-    height: "100%",
-    padding: 20,
-    backgroundColor: "rgba(0, 0, 0, .5)",
-    boxShadow: "0 0 5rem rgba(0, 0, 0, .5)",
+    width: "auto",
+    minWidth: "min-content",
+    maxWidth: "max-content",
+    margin: 5,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: "rgba(255, 255, 255, 0.99)",
+    boxShadow: "0 0 1rem rgba(0, 0, 0, .5)",
   },
   subtitle: {
-    fontSize: 28,
-    color: "white",
-    textShadow: "2px 2px 3px #000",
+    fontSize: 20,
+    color: "gray",
   },
   title: {
-    fontSize: 60,
-    color: "white",
-    textShadow: "6px 6px 7px #000",
+    fontSize: 30,
   },
   link: {
+    margin: 5,
     background: "ef3d56",
-    marginTop: 25,
   },
 }));
 
@@ -64,7 +56,7 @@ const settings = {
   speed: 500,
   infinite: true,
   autoplay: true,
-  autoplaySpeed: 3000,
+  autoplaySpeed: 5000,
   slidesToShow: 1,
   slidesToScroll: 1,
 };
@@ -107,30 +99,30 @@ export function Banner(): JSX.Element {
         {banners.map((item, i) => {
           return (
             <Card key={i} elevation={0}>
-              <CardActionArea>
-                <CardContent
-                  className={classes.card}
-                  style={{ backgroundImage: `url(${item.image})` }}
-                >
-                  <div className={classes.scrim}>
+              <CardContent
+                className={classes.card}
+                style={{ backgroundImage: `url(${item.image})` }}
+              >
+                <div>
+                  <div data-cy="banner-about" className={classes.scrim}>
                     <Typography className={classes.subtitle}>
                       {item.subtitle}
                     </Typography>
                     <Typography className={classes.title}>
                       {item.title}
                     </Typography>
-                    <Button
-                      className={classes.link}
-                      color="secondary"
-                      variant="contained"
-                      disableElevation={true}
-                      href={ADMIN_ENDPOINT}
-                    >
-                      Go Now
-                    </Button>
                   </div>
-                </CardContent>
-              </CardActionArea>
+                </div>
+                <Button
+                  className={classes.link}
+                  color="secondary"
+                  variant="contained"
+                  disableElevation={true}
+                  href={ADMIN_ENDPOINT}
+                >
+                  Go Now
+                </Button>
+              </CardContent>
             </Card>
           );
         })}
