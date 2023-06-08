@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import { store } from "store/store";
 
 import "css/style.css";
+import "css/layout.css";
 
 const theme = createTheme({
   palette: {

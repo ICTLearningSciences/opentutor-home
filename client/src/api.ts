@@ -64,9 +64,9 @@ export async function fetchAppConfig(): Promise<AppConfig> {
 
 export async function fetchLessons(config?: AppConfig): Promise<Lesson[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let filter: any = { media: { $nin: [null, ""] } };
+  let filter: any = { media: { $nin: [null, ""] }, "media.type": "image" };
   if (config && config.featuredLessons?.length > 0) {
-    filter = { ...filter, lessonId: { $in: config.featuredLessons } };
+    filter = { lessonId: { $in: config.featuredLessons } };
   }
   const result = await fetchGql<{ lessons: Connection<GqlLesson> }>({
     query: `
@@ -74,7 +74,7 @@ export async function fetchLessons(config?: AppConfig): Promise<Lesson[]> {
         lessons(
           filter: $filter,
           sortBy: "updatedAt",
-          limit: 5,
+          limit: 10,
         ) {
           edges {
             node {
