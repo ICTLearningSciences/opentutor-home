@@ -5,10 +5,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import React from "react";
-import { List, Card, ListItem, CircularProgress } from "@mui/material";
+import { Card, ListItem, CircularProgress, Grid } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 import { TUTOR_ENDPOINT } from "api";
-import { Lesson, LoadStatus } from "types";
+import { LoadStatus } from "types";
 import { useAppSelector } from "store/hooks";
 import { useWithLessons } from "store/slices/lessons/useWithLessons";
 import defaultIcon from "static/ColoredLogo3.png";
@@ -17,6 +17,9 @@ export const LatestLessons = (): JSX.Element => {
   const { classes } = useStyles();
   const { loadStatus, lessons } = useWithLessons();
   const [hover, setHover] = React.useState(-1);
+  const featured = useAppSelector(
+    (state) => state.config.config?.featuredLessons || []
+  );
   const logo = useAppSelector((state) => state.config.config?.logoLargeIcon);
 
   function launchLesson(lessonId: string): void {
@@ -26,7 +29,7 @@ export const LatestLessons = (): JSX.Element => {
   const onMouseOver = (i: number): void => setHover(i);
   const onMouseOut = (): void => setHover(-1);
 
-  if (loadStatus === LoadStatus.IN_PROGRESS) {
+  if (loadStatus === LoadStatus.IN_PROGRESS || loadStatus === LoadStatus.NONE) {
     return (
       <div className={classes.root}>
         <h2 className={classes.header}>Latest Lessons</h2>
@@ -47,61 +50,69 @@ export const LatestLessons = (): JSX.Element => {
 
   return (
     <div className={classes.root}>
-      <h2 className={classes.header}>Latest Lessons</h2>
-      <List data-cy="lessons" className={classes.list}>
-        {lessons.map((lesson: Lesson, i: number) => {
+      <h2 className={classes.header}>
+        {featured.length > 0 ? "Featured Lessons" : "Latest Lessons"}
+      </h2>
+      <Grid data-cy="lessons" container className={classes.grid} spacing={3}>
+        {lessons.map((lesson, i) => {
           return (
-            <ListItem
-              data-cy={`lesson-${i}`}
-              key={i}
-              onClick={() => {
-                launchLesson(lesson.lessonId);
-              }}
-            >
-              <Card
-                data-cy={`image-${i}`}
-                className={classes.card}
-                style={{ backgroundImage: `url(${lesson.image})` }}
-                onMouseOver={() => onMouseOver(i)}
-                onMouseOut={() => onMouseOut()}
-                elevation={hover === i ? 10 : 1}
+            <Grid item xs={12} md={6} lg={3} xl={2} key={i}>
+              <ListItem
+                data-cy={`lesson-${i}`}
+                key={i}
+                onClick={() => {
+                  launchLesson(lesson.lessonId);
+                }}
               >
-                <h2 className={classes.text}>{lesson.name}</h2>
-              </Card>
-            </ListItem>
+                <Card
+                  data-cy={`image-${i}`}
+                  className={classes.card}
+                  style={{ backgroundImage: `url(${lesson.image})` }}
+                  onMouseOver={() => onMouseOver(i)}
+                  onMouseOut={() => onMouseOut()}
+                  elevation={hover === i ? 10 : 1}
+                >
+                  <h2 className={classes.text}>{lesson.name}</h2>
+                </Card>
+              </ListItem>
+            </Grid>
           );
         })}
-      </List>
+      </Grid>
     </div>
   );
 };
 
 const useStyles = makeStyles({ name: { LatestLessons } })(() => ({
   root: {
-    height: "100%",
-    width: "100%",
-    padding: 25,
+    position: "relative",
+    maxWidth: "95%",
+    height: "100vh",
+    paddingTop: 75,
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+  grid: {
+    rowGap: 5,
+    paddingBottom: 50,
+    whiteSpace: "nowrap",
+    padding: 10,
   },
   header: {
     textDecoration: "underline",
     textDecorationColor: "#ef3d56",
   },
-  list: {
-    display: "flex",
-    flexDirection: "row",
-    overflow: "auto",
-    whiteSpace: "nowrap",
-    padding: 10,
-  },
   card: {
     display: "flex",
-    width: 300,
+    width: "98%",
     height: 200,
     alignItems: "center",
     justifyContent: "center",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
+    animation: "fadeInAnimation 0.3s",
+    animationFillMode: "forwards",
   },
   image: {
     width: "100%",
@@ -110,6 +121,8 @@ const useStyles = makeStyles({ name: { LatestLessons } })(() => ({
   },
   text: {
     padding: 2,
+    width: "100%",
+    textAlign: "center",
     color: "white",
     textShadow: "2px 2px 3px #444",
     backgroundColor: "rgba(0, 0, 0, .2)",
