@@ -32,11 +32,20 @@ function cyMockLessons(): MockGraphQLQuery {
   });
 }
 
+function cyMockConfig(): MockGraphQLQuery {
+  return mockGQL("FetchAppConfig", {
+    appConfig: {
+      googleClientId: "fake-google-client-id",
+    },
+  });
+}
+
 describe("Latest Lessons", () => {
   it("displays list of lessons", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] });
+    cyMockDefault(cy, { gqlQueries: [cyMockLessons(), cyMockConfig()] });
     cy.visit("/");
+    cy.wait("@graphql");
     cy.get("[data-cy=lessons]").children().should("have.length", 2);
     cy.get("[data-cy=lesson-0]").contains("lesson 1");
     cy.get("[data-cy=lesson-1]").contains("lesson 2");
@@ -44,8 +53,9 @@ describe("Latest Lessons", () => {
 
   it("launches a lesson", () => {
     cySetup(cy);
-    cyMockDefault(cy, { gqlQueries: [cyMockLessons()] });
+    cyMockDefault(cy, { gqlQueries: [cyMockLessons(), cyMockConfig()] });
     cy.visit("/");
+    cy.wait("@graphql");
     cy.get("[data-cy=lesson-0]").click();
     cy.location("pathname").should("contain", "/tutor");
     cy.location("search").should("contain", "lesson=lesson1");

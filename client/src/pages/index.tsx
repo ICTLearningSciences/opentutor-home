@@ -4,22 +4,22 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "tss-react/mui";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import Banner from "components/banner";
 import LatestLessons from "components/latest-lessons";
 import Header from "components/header";
-import Footer from "components/footer";
-
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { getClientID } from "config";
+import { useWithConfig } from "store/slices/config/useWithConfig";
+import { CircularProgress } from "@mui/material";
 
 const useStyles = makeStyles({ name: { IndexPage } })(() => ({
   root: {
     height: "100%",
+    width: "100%",
     display: "flex",
-    flexFlow: "column",
+    flexDirection: "column",
     textAlign: "center",
     alignContent: "center",
     alignItems: "center",
@@ -28,31 +28,25 @@ const useStyles = makeStyles({ name: { IndexPage } })(() => ({
 
 function IndexPage(): JSX.Element {
   const { classes } = useStyles();
-  const [googleClientId, setClientId] = React.useState<string>("");
+  const { config, loadConfig } = useWithConfig();
 
-  React.useEffect(() => {
-    let mounted = true;
-    getClientID()
-      .then((id: string) => {
-        if (!mounted) {
-          return;
-        }
-        setClientId(id);
-      })
-      .catch((err) => console.error(err));
-    return () => {
-      mounted = false;
-    };
+  useEffect(() => {
+    loadConfig();
   }, []);
+
+  if (!config) {
+    <div className={classes.root}>
+      <CircularProgress />
+    </div>;
+  }
 
   return (
     <div className={classes.root}>
-      <GoogleOAuthProvider clientId={googleClientId || "test"}>
-        <Header googleClientId={googleClientId} />
+      <GoogleOAuthProvider clientId={config?.googleClientId || "test"}>
+        <Header />
       </GoogleOAuthProvider>
       <Banner />
       <LatestLessons />
-      <Footer />
     </div>
   );
 }

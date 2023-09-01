@@ -16,34 +16,19 @@ jobs:
         run: npm run test:license
       - name: Client - Install
         run: cd client && npm ci
-      # - name: Client - audit
-      #   run: cd client && npm run test:audit
       - name: Client - Run lint test
         run: cd client && npm run test:lint
       - name: Client - Run types test
         run: cd client && npm run test:types
+      # - name: Client - audit
+      #   run: cd client && npm run test:audit
   test-e2e:
     name: test e2e
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: build + run app in docker-compose
-        run: docker-compose up -d
-      - name: check services running
-        run: docker ps
-      - name: cypress - run tests
-        run: make test-e2e-exec
-      - name: cypress failed - retrieve image diffs
-        run: |
-          make test-e2e-image-snapshots-copy
-          mkdir -p cypress/cypress/snapshots/snapshots/__diff_output__
-        if: ${{ failure() }}
-      - name: cypress failed - upload image-diff artifacts2
-        uses: actions/upload-artifact@v1
-        if: ${{ failure() }}
-        with:
-          name: snapshot_failed_diffs
-          path: cypress/cypress/snapshots/snapshots/__diff_output__
+      - run: docker-compose build
+      - run: docker-compose up --abort-on-container-exit --exit-code-from e2e
   publish-check:
     name: publish check
     needs:

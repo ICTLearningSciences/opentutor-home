@@ -8,7 +8,6 @@ import { GqlLesson, Lesson } from "types";
 
 export function convertLessonsGql(gqlLessons: GqlLesson[]): Lesson[] {
   return gqlLessons.map((lesson) => {
-    console.log(lesson);
     return {
       ...lesson,
       image:

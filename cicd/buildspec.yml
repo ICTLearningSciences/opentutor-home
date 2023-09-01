@@ -15,10 +15,10 @@ phases:
       - npm run test:format
       - npm run test:license
       - cd client
-      # - npm run test:audit
       - npm run test:lint
       - npm run test:types
-      # # cypress tests - its cheaper to run them in github actions
+      # - npm run test:audit
+      # cypress tests - its cheaper to run them in github actions
 
   build:
     commands:

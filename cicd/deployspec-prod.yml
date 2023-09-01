@@ -2,13 +2,14 @@ version: 0.2
 
 env:
   variables:
+    STAGE: 'prod'
     GRAPHQL_ENDPOINT: 'https://api.opentutor.info/graphql/graphql'
-    ADMIN_ENTRYPOINT: 'https://opentutor.info/admin'
+    ADMIN_ENDPOINT: 'https://opentutor.info/admin'
     TUTOR_ENDPOINT: 'https://opentutor.info/tutor'
   parameter-store:
-    GOOGLE_CLIENT_ID: '/shared/google_client_id'
     S3_DEPLOY_BUCKET_PROD: "/prod-opentutor/s3-websites/NAME"
     CDN_ID_PROD: "/prod-opentutor/CLOUDFRONT_DISTRIBUTION_ID"
+    GOOGLE_CLIENT_ID: '/shared/google_client_id'
 
 phases:
   install:

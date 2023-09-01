@@ -4,28 +4,18 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-// ***********************************************************
-// This example plugins/index.js can be used to load plugins
-//
-// You can change the location of this file or turn off loading
-// the plugins file with the 'pluginsFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/plugins-guide
-// ***********************************************************
+import { configureStore } from "@reduxjs/toolkit";
+import configReducer from "./slices/config";
+import lessonsReducer from "./slices/lessons";
 
-// This function is called when a project is opened or re-opened (e.g. due to
-// the project's config changing)
+export const store = configureStore({
+  reducer: {
+    config: configReducer,
+    lessons: lessonsReducer,
+  },
+});
 
-/// <reference types="cypress" />
-
-/**
- * @type {Cypress.PluginConfig}
- */
-const {
-  addMatchImageSnapshotPlugin,
-} = require("cypress-image-snapshot/plugin");
-
-module.exports = (on, config) => {
-  addMatchImageSnapshotPlugin(on, config);
-};
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;
