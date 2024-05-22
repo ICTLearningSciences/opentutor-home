@@ -8,7 +8,7 @@
     "cy:verify": "npx cypress verify"
   },
   "devDependencies": {
-    "cypress": "^12.13.0",
+    "cypress": "^13.10.0",
     "typescript": "^5.1.3"
   }
 }
