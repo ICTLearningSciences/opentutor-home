@@ -12,7 +12,7 @@
     "@mui/material": "^5.12.1",
     "@react-oauth/google": "^0.10.0",
     "@reduxjs/toolkit": "^1.9.5",
-    "axios": "^0.28.1",
+    "axios": "^1.6.0",
     "gatsby": "^5.13.5",
     "gatsby-plugin-env-variables": "^2.1.0",
     "react": "^18.2.0",
